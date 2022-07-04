@@ -1,0 +1,5 @@
+node_modules
+Logo
+.DS_Store
+out # Output from electron build
+dist # Built binaries

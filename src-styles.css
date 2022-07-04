@@ -1,0 +1,20 @@
+/* styles.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Add styles here to customize the appearance of your app */
+
+/* 'primary-dark': '#A3E635',
+'primary': '#0A122A'  */
+/* 
+.backgroundcolor-light {
+    background-color: #ffffff;
+} */
+
+.bg-primary {
+    background-color: #0A122A;
+}
+
+.text-primary {
+    color: #A3E635;
+}

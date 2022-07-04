@@ -1,0 +1,36 @@
+{
+  "name": "cropbe",
+  "version": "1.0.0",
+  "description": "Cross Platform BACnet Explorer",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rristov60/CROPBE.git"
+  },
+  "keywords": [
+    "BACnet",
+    "Explorer",
+    "Cross",
+    "Platform",
+    "Open",
+    "Source"
+  ],
+  "author": "Riste Ristov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rristov60/CROPBE/issues"
+  },
+  "homepage": "https://github.com/rristov60/CROPBE#readme",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.2",
+    "electron": "^19.0.7",
+    "tailwindcss": "^3.1.4"
+  },
+  "dependencies": {
+    "node-bacnet": "^0.2.4"
+  }
+}
