@@ -1,5 +1,3 @@
-node_modules
-Logo
-.DS_Store
+node_modules # Ingore the modules
 out # Output from electron build
 dist # Built binaries
