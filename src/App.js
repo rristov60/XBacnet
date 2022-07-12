@@ -33,11 +33,33 @@ function App() {
     // {
     // header: {func: 11, sender: { address: 'blabbla'}}
     // }
-]);
+  ]);
+
+  const [selectedDevice, setSelectedDevice] = useState({});
 
   const scanDevices = (theDevices) => {
     setDevices(theDevices);
     console.log(scannedDevices);
+  }
+
+  const updateDevice = (theDevice) => {
+    // Filter and update the appropriate device :))
+    // Also try to see if there is an k=lock for this operation so it is not utilized by mutlitple
+    // operations at the same time
+    setDevices(scannedDevices.map((device) => 
+                              ( device.address === theDevice.address 
+                                && device.deviceId === theDevice.deviceId )
+                                  ? theDevice 
+                                  : device));
+  }
+
+  const selectDevice = (theDevice) => {
+      var selected = scannedDevices.filter(x => (x.address === theDevice.address && x.deviceId === theDevice.deviceId));
+
+      if(selected.length > 0)
+        setSelectedDevice(selected[0]);
+
+      console.log('The Selected Device: ', selected);
   }
 
   return (
@@ -67,7 +89,7 @@ function App() {
               </header>
           </Grid> */}
           <Grid item xs={3}>
-            <TheCard item={<TreeDevices devices={scannedDevices}/>} heading='Devices'/>
+            <TheCard item={<TreeDevices devices={scannedDevices} updateDevices={updateDevice} selectDevice={selectDevice}/>} heading='Devices'/>
             {/* <TheCard/> */}
             {/* <ContextMenu items={<Scan addDevice={scanDevices}/>}/> */}
           </Grid>
@@ -84,7 +106,7 @@ function App() {
             <TreeDevices devices={scannedDevices}/>
           </Grid> */}
           <Grid item xs={3}>
-            <TheCard heading='Variables' item={<TreeVariables device={{deviceId: 1234}}/>}/>
+            <TheCard heading='Variables' item={<TreeVariables device={selectedDevice}/>}/>
             {/* <TheCard heading='Variables' item={<TreeVariables device={device}/>}/> */}
           </Grid>
           <Grid item xs={9}>

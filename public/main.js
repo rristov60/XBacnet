@@ -10,6 +10,7 @@ var interfaces = null;
 
 // Loading Screen
 const bacnet = require('node-bacnet'); // This might be moved to another place later
+// const bacnet = require('bacstack'); // This might be moved to another place later
 
 const createWindow = () => {
     
@@ -113,6 +114,64 @@ const registerStreamListeners = () => {
         // type: 8, instance: 4194303, propertyId: 76 --> Reads all objects present on the device and returns their type & instance
         // This can be after utilized to read all of the vars and so on
         client.readProperty(msg.address, {type: 8, instance: 4194303}, 76, (err, value) => {
+                // replyPort.postMessage(msg);
+            if(!err)
+                replyPort.postMessage(value);
+            else
+                replyPort.postMessage(err);
+
+            replyPort.close();
+        });
+    })
+
+    ipcMain.on('readObject', (event, msg) => {
+        // The renderer has sent us a MessagePort that it wants us to send our
+        // response over.
+        const [replyPort] = event.ports
+
+        console.log('Main read object', msg);
+      
+        // Here we send the messages synchronously, but we could just as easily store
+        // the port somewhere and send messages asynchronously.
+        // for (let i = 0; i < msg.count; i++) {
+        //   replyPort.postMessage(msg.element)
+        // }
+        
+        // type: 8, instance: 4194303, propertyId: 76 --> Reads all objects present on the device and returns their type & instance
+        // This can be after utilized to read all of the vars and so on
+        client.readProperty(msg.device.address, {type: msg.variable.type, instance: msg.variable.instance}, msg.property, (err, value) => {
+
+            console.log(err);
+                // replyPort.postMessage(msg);
+            if(!err)
+                replyPort.postMessage(value);
+            else
+                replyPort.postMessage(err);
+
+            replyPort.close();
+        });
+    })
+
+    // Read multiple
+    ipcMain.on('readMultiple', (event, msg) => {
+        // The renderer has sent us a MessagePort that it wants us to send our
+        // response over.
+        const [replyPort] = event.ports
+
+        console.log('Main read object', msg);
+      
+        // Here we send the messages synchronously, but we could just as easily store
+        // the port somewhere and send messages asynchronously.
+        // for (let i = 0; i < msg.count; i++) {
+        //   replyPort.postMessage(msg.element)
+        // }
+        
+        // type: 8, instance: 4194303, propertyId: 76 --> Reads all objects present on the device and returns their type & instance
+        // This can be after utilized to read all of the vars and so on
+        console.log(msg.readObject);
+        client.readPropertyMultiple(msg.device.address, msg.readObject, (err, value) => {
+
+            console.log(err);
                 // replyPort.postMessage(msg);
             if(!err)
                 replyPort.postMessage(value);

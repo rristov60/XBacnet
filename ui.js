@@ -57,7 +57,7 @@ readAllObjectsBtn.addEventListener('click', () => {
     // Start loading screen (scanning dialog)
     console.log('Clicked Read All Objects!');
     device = devices[0];
-    address = device.header.sender; //testing only
+    // address = device.header.sender; //testing only
 
     window.testAPI.readAllObjects(address, (response) => {
         console.log('From Read:', response);

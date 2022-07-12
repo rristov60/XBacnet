@@ -9,16 +9,42 @@ const Scan = ({ addDevice }) => {
         // Start loading
         setLoading(true);
         window.testAPI.whoIs((response) => {
+
+
             // TODO:
             // Fetch devices name and represent them that way (*but keep the IP as tooltip)
             console.log(response);
+
+            let devices = []; // Array that stores the devices
+
             var i = 2;
             response.forEach((item) => {
-                item.nodeId = i;
+
+                // New object for each device in the response
+                let device = {};
+
+                // console.log(item);
+                
+                // Formatting so it is more readable
+                device.address = item.header.sender.address;
+                device.forwarded = item.header.sender.forwardedFrom;
+                device.deviceId = item.payload.deviceId;
+                device.maxApdu = item.payload.maxApdu;
+                device.segmentation = item.payload.segmentation;
+                device.vendorId = item.payload.vendorId;
+                device.apduType = item.header.apduType;
+                device.confirmedService = item.header.confirmedService;
+                device.expectingReply = item.header.expectingReply;
+                device.func = item.header.func;
+                device.nodeId = i;
+
+                devices.push(device); // Adding the new device to the array
+
                 i++;
+
             })
             
-            addDevice(response);
+            addDevice(devices); // Propagating the changes
 
             // End Loading
             setLoading(false);

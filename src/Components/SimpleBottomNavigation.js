@@ -28,7 +28,7 @@ export default function SimpleBottomNavigation() {
         <BottomNavigationAction label="Favorites" icon={<FavoriteIcon />} />
         <BottomNavigationAction label="Nearby" icon={<LocationOnIcon />} />
       </BottomNavigation> */}
-      <Scan addDevice={scanDevices}/>
+      {/* <Scan addDevice={scanDevices}/> */}
     </Box>
   );
 }

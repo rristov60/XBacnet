@@ -4,10 +4,10 @@ import { alpha, styled } from '@mui/material/styles';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Collapse from '@mui/material/Collapse';
-import { Alert } from '@mui/material';
-import { useSpring, animated } from 'react-spring'
-import Typography from 'react';
+import { useSpring, animated, update } from 'react-spring'
 import ErrorAlert from './ErrorAlert';
+
+const bacnetTypes = require('../Helpers/BacnetTypes.json');
 
 function MinusSquare(props) {
   return (
@@ -83,6 +83,8 @@ const StyledTreeItem = styled((props) => (
   },
 }));
 
+// const [loading, setLoading] = useState(false);
+
 const divideIpPort = (string, part) => {
   var formatted = string.split(':');
 
@@ -92,7 +94,83 @@ const divideIpPort = (string, part) => {
     return formatted[1];
 }
 
-const TreeDevices = ({ devices }) => {
+const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
+
+  const updateDevice = (device) => {
+
+    if(device.variables == undefined) {
+
+      // Read Name, Location and all of the variables of the device
+      const intialReadRequestArray = [
+        {
+          objectId: 
+          { 
+              type: 8,
+              instance: device.deviceId
+          },
+          properties: [
+            {  // Read the name of the device
+              id: 76
+            }, 
+            { // Read all objects of the device
+              id: 28
+            },
+            { // Read device location
+              id: 58
+            }
+          ]
+        }
+      ];
+
+
+      let i = 2;
+      window.testAPI.readMultiple(device, intialReadRequestArray, (response) => {
+        // Debugging the response
+        // console.log(response);
+          response.values[0].values.map((value) => {
+
+            // For each response (since it is a multiple read, we check the id that corresponds with the property id)
+
+            // If the current value is for all of the objects on the device
+            if (value.id == 76) {
+              device.variables=[];  // Initialize the device variable array
+              value.value.forEach((variable) => { // Loop through each variable 
+                if(variable.value.type != 8) {
+                  variable.nodeId = i; // Unique (per tree) Node id 
+                  Object.keys(bacnetTypes).map((key) => { // Getting the name of the variable type
+                    if(bacnetTypes[key] == variable.value.type) {
+                      variable.typeName = key;
+                      console.log(variable.typeName);
+                    }
+                  })
+                  i++; // Incrementing the node id
+                  device.variables.push(variable); // Adding the variable to the device
+                }
+              })
+              // If the current value is for device name
+            } else if (value.id == 28) {
+              device.name = value.value[0].value;  // Assigning the device name from the read
+
+              // If the read is for device locaiton
+            } else {
+              device.location = value.value[0].value; // Assigning the device location
+            }
+          })
+
+          // The properties above are enough for initial reading
+
+          updateDevices(device); // Updating the device
+          selectDevice(device); // Marking the device as selected
+      });
+      
+    } else {
+      selectDevice(device); // If the reading is already done just select the device
+    }
+    // Check if the name is set, don't look for the name of the device
+    // Check if all variables are present for the device, don't pull all of the variables
+    // Check if there are subscriptions update them accordingly. Also be sure to keep
+    // track of the subscriptions in the background
+  }
 
   return (
     <>
@@ -110,11 +188,11 @@ const TreeDevices = ({ devices }) => {
           <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>Devices</span>}>
             {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
             { devices.map((device) => { return <StyledTreeItem 
-                                                  onClick={() => {console.log('riste'); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}
-                                                  key={device.payload.deviceId} 
+                                                  onClick={() => updateDevice(device)}
+                                                  key={`${device.address}|${device.deviceId}`} 
                                                   nodeId={`${device.nodeId}`} 
                                                   label={<span style={{ fontSize: '0.8rem' }}>
-                                                    {`[ #${device.payload.deviceId} ] ${device.header.sender.address}`}</span>}
+                                                    {`[ #${device.deviceId} ] ${device.address}`}</span>}
                                                     /> })}
           </StyledTreeItem>
         </TreeView>

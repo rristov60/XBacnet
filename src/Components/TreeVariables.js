@@ -111,10 +111,11 @@ const TreeVariables = ({ device }) => {
             {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
             { device.variables.map((variable) => { return <StyledTreeItem 
                                                   onClick={() => {console.log('riste'); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}
-                                                  key={variable.id} /* Find something unique to addresss the variables */
-                                                  nodeId={`${device.nodeId}`} // Unique node id
+                                                  key={`${variable.value.instance}|${variable.value.type}`} /* Find something unique to addresss the variables */
+                                                  nodeId={`${variable.nodeId}`} // Unique node id
                                                   label={<span style={{ fontSize: '0.8rem' }}>
-                                                    {`${variable.name} ( ${variable.type} )`}</span>}
+                                                    {`${(variable.name == undefined) ? variable.typeName : variable.name} ( Instance: ${variable.value.instance} )`}
+                                                    </span>}
                                                     /> })}
           </StyledTreeItem>
         </TreeView>

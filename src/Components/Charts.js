@@ -1,8 +1,16 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import { ResponsiveContainer } from 'recharts';
 
+const d = new Date();
+
 const Charts = () => {
-    const data = [{name: 'Page A', uv: 400, pv: 2400, amt: 2400}, {name: 'Page B', uv: 200, pv: 2433, amt: 1234}, {name: 'Page C', uv: 2010, pv: 243123, amt: 1234}];
+    const data = [
+        {name: d.getMinutes(), uv: 400, pv: 2400, amt: 2400}, 
+        {name: d.getSeconds(), uv: 200, pv: 2433, amt: 122234},
+        {name: d.getHours(), uv: 230, pv: 123, amt: 22}, 
+        {name: `${d.getHours()}:${d.getMinutes()}:${d.getSeconds()} h:m:s`, uv: 854, pv: 123, amt: 222}, 
+        {name: 'Page C', uv: 1233, pv: 123, amt: 111}, 
+        ];
       return (
         <ResponsiveContainer width="95%" height='93%'>
             <LineChart data={data} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
