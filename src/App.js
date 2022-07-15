@@ -6,7 +6,7 @@ import { useState } from 'react'
 import Scan from './Components/Scan';
 import Devices from './Components/Devices';
 import TreeDevices from './Components/TreeDevices';
-import { Grid } from '@mui/material'
+import { Dialog, Grid } from '@mui/material'
 import ContextMenu from './Components/ContextMenu';
 import TheCard from './Components/TheCard';
 import SimpleBottomNavigation from './Components/SimpleBottomNavigation';
@@ -16,6 +16,7 @@ import TreeVariables from './Components/TreeVariables';
 import Charts from './Components/Charts';
 import { Card, CardContent, Typography } from '@mui/material';
 import Footer from './Components/Footer';
+import AlertDialog from './Components/AlertDialog';
 // let devices = [];
 
 // const getData = () => { 
@@ -37,9 +38,22 @@ function App() {
 
   const [selectedDevice, setSelectedDevice] = useState({});
 
+  const [selectedVariable, setSelectedVariable] = useState({});
+
   const scanDevices = (theDevices) => {
     setDevices(theDevices);
     console.log(scannedDevices);
+  }
+
+  const scanStart = () => {
+    setDevices([]);
+    setSelectedVariable({});
+    setSelectedDevice({});
+  }
+
+  const selectVariable = (variable) => {
+    console.log('Selected var: ', variable);
+    setSelectedVariable(variable);
   }
 
   const updateDevice = (theDevice) => {
@@ -58,6 +72,8 @@ function App() {
 
       if(selected.length > 0)
         setSelectedDevice(selected[0]);
+      else
+        setSelectedDevice({});      
 
       console.log('The Selected Device: ', selected);
   }
@@ -99,14 +115,14 @@ function App() {
           <Grid item xs={4}>
             {/* <Devices devices={scannedDevices}/> */}
             {/* <TheCard item={<Devices devices={scannedDevices}/>} heading='Explorer'/> */}
-            <TheCard item={<ExplorerTable/>} heading='Explorer'/>
+            <TheCard item={<ExplorerTable variable={selectedVariable}/>} heading='Explorer'/>
             {/* <TheCard item={<EditableTable/>} heading='Exporer'/> */}
           </Grid>
           {/* <Grid item xs={6}>
             <TreeDevices devices={scannedDevices}/>
           </Grid> */}
           <Grid item xs={3}>
-            <TheCard heading='Variables' item={<TreeVariables device={selectedDevice}/>}/>
+              <TheCard heading='Variables' item={<TreeVariables device={selectedDevice} updateDevice={updateDevice} selectVariable={selectVariable}/>}/>
             {/* <TheCard heading='Variables' item={<TreeVariables device={device}/>}/> */}
           </Grid>
           <Grid item xs={9}>
@@ -116,6 +132,8 @@ function App() {
               {/* CardContent to store the item */}
                 <br></br>
                 <Charts/>
+                {/* <AlertDialog/> */}
+                {/* <Dialog/> */}
             </Card>
             
           </Grid>
@@ -125,7 +143,7 @@ function App() {
           <Grid item xs={12}>
             <br/>
             {/* <SimpleBottomNavigation/> */}
-            <Footer children={<Scan addDevice={scanDevices}/>}/>
+            <Footer children={<Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart}/>}/>
           </Grid>
           
         </Grid>

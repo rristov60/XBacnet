@@ -8,6 +8,8 @@ import { Alert } from '@mui/material';
 import { useSpring, animated } from 'react-spring'
 import Typography from 'react';
 import ErrorAlert from './ErrorAlert';
+import WarningAlert from './WarningAlert';
+const bacnetProperties = require('../Helpers/BacnetProperties.json')
 
 function MinusSquare(props) {
   return (
@@ -92,7 +94,112 @@ const divideIpPort = (string, part) => {
     return formatted[1];
 }
 
-const TreeVariables = ({ device }) => {
+const TreeVariables = ({ device, updateDevice, selectVariable }) => {
+
+  const updateSelectedVar = (device, variable) => {
+    if(variable.name == undefined) {
+
+      // Read the stuff
+      const requestArray = [
+        {
+          objectId: 
+          { 
+              type: variable.value.type,
+              instance: variable.value.instance
+          },
+          properties: [
+            // {  // Read the name of the device(object)
+            //   id: 77
+            // }, 
+            // { // Read the description of the device
+            //   id: 28
+            // },
+            {  // Try to read all objects
+              id: 8
+            }
+          ]
+        }
+      ];
+
+      window.testAPI.readMultiple(device, requestArray, (response) => {
+        // Debugging the response
+          console.log(response);
+
+          // response.values[0].values.map((value) => {
+          //   if(value.id == 77) {
+          //       variable.name = value.value[0].value;
+          //   } else if (value.id == 28) {
+          //       variable.description = value.value[0].value;
+          //   }
+          // })
+
+          // Formatting the read properties to correspond
+          // with "enum"
+          response.values[0].values.map((value) => {
+            Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
+              if(bacnetProperties[key] == value.id) {
+                variable[key] = value.value[0].value;
+              }
+            })
+          })
+
+          updateDevice(device); // Updating the device
+          selectVariable(variable);
+      });
+
+    } else {
+      // TODO:
+      // Select the variable and display it's properties, but for now figure out 
+      // the part above
+      selectVariable(variable);
+
+    }
+  }
+
+
+  // const readAllVars = (device) => {
+  //   var requestArray = [];
+
+  //   device.variables.forEach((variable) => {
+  //     if(variable.name == undefined) {
+  //       requestArray.push({
+  //         objectId:
+  //         {
+  //           type: variable.value.type,
+  //           instance: variable.value.instance
+  //         },
+  //         properties: [
+  //           {  // Read the name of the device(object)
+  //             id: 77
+  //           }, 
+  //           { // Read the description of the device
+  //             id: 28
+  //           },
+  //           {  // Try to read all of the device properties
+  //             // currently it fails, no idea why
+  //             id: 8
+  //           }
+  //         ]
+  //       });
+
+  //       window.testAPI.readMultiple(device, requestArray, (response) => {
+  //         // Debugging the response
+  //           console.log(response);
+  //           reponse.values.forEach((value) => {
+
+  //           })
+  //           // response.values[0].values.map((value) => {
+  //           //   if(value.id == 77) {
+  //           //       variable.name = value.value[0].value;
+  //           //   } else if (value .id == 28) {
+  //           //       variable.description = value.value[0].value;
+  //           //   }
+  //           //   updateDevice(device); // Updating the device
+  //           // })
+  //       });
+  //     }
+  //   })
+  // }
 
   return (
     <>
@@ -107,14 +214,14 @@ const TreeVariables = ({ device }) => {
           sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
           style={{ textAlign: 'left' }}
         >
-          <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>{`[ #${device.deviceId} ] ${device.name}`}</span>}>
+          <StyledTreeItem nodeId="1" onClick={() => {{selectVariable({})}}} label={<span style={{ fontSize: '0.9rem' }}>{`${device.name} \n [ IP: ${device.address}, #${device.deviceId} ]`}</span>}>
             {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
             { device.variables.map((variable) => { return <StyledTreeItem 
-                                                  onClick={() => {console.log('riste'); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}
+                                                  onClick={() => {updateSelectedVar(device, variable); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}
                                                   key={`${variable.value.instance}|${variable.value.type}`} /* Find something unique to addresss the variables */
                                                   nodeId={`${variable.nodeId}`} // Unique node id
-                                                  label={<span style={{ fontSize: '0.8rem' }}>
-                                                    {`${(variable.name == undefined) ? variable.typeName : variable.name} ( Instance: ${variable.value.instance} )`}
+                                                  label={<span style={{ fontSize: '0.78rem' }}>
+                                                    {`${(variable.OBJECT_NAME == undefined) ? `${variable.typeName} ( Instance: ${variable.value.instance} )` : `${variable.OBJECT_NAME} (${variable.typeName})`} `}
                                                     </span>}
                                                     /> })}
           </StyledTreeItem>
@@ -123,7 +230,8 @@ const TreeVariables = ({ device }) => {
         : // Else
         // If no devices are found
         // <ErrorAlert text={`${(device == undefined) ? `No variables found for #${device.deviceId}` : 'No variables found' } !`}/>
-        <ErrorAlert text={`No variables found !`}/>
+        // <ErrorAlert text={`No variables discovered !`}/>
+        <WarningAlert text={`No variables discovered !`} tooltip='Riste'/>
     }
   </>
   )

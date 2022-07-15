@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import InfoAlert from './InfoAlert';
 
 function createData(name, calories, fat, carbs, protein, price) {
   return {
@@ -131,27 +132,36 @@ const rows = [
 ];
 
 // Table for COV Subscriptions / Alarams / Period Polling
-export default function COVTable() {
+export default function COVTable({ variable }) {
   return (
-    <TableContainer component={Paper} sx={{ backgroundColor: 'transparent'}}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Device</TableCell>
-            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Object&nbsp;ID</TableCell>
-            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Name</TableCell>
-            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Value</TableCell>
-            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Time</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {/* Actual DATA */}
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+    {
+      (variable?.cov == undefined) 
+      ?
+      <InfoAlert text='No subscriptions !'/>
+      :
+        <TableContainer component={Paper} sx={{ backgroundColor: 'transparent'}}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Device</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Object&nbsp;ID</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Name</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Value</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Time</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {/* Actual DATA */}
+            {rows.map((row) => (
+              <Row key={row.name} row={row} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    }
+    </>
+    
   );
 }

@@ -6,6 +6,7 @@ import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Collapse from '@mui/material/Collapse';
 import { useSpring, animated, update } from 'react-spring'
 import ErrorAlert from './ErrorAlert';
+import { Tooltip } from 'recharts';
 
 const bacnetTypes = require('../Helpers/BacnetTypes.json');
 
@@ -98,6 +99,8 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
 
   const updateDevice = (device) => {
 
+    console.log(device);
+
     if(device.variables == undefined) {
 
       // Read Name, Location and all of the variables of the device
@@ -109,10 +112,13 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
               instance: device.deviceId
           },
           properties: [
-            {  // Read the name of the device
+            {  // Read all objects of the device
               id: 76
             }, 
-            { // Read all objects of the device
+            {  // Read the name of the device(object)
+              id: 77
+            }, 
+            { // Read the description of the device
               id: 28
             },
             { // Read device location
@@ -148,11 +154,10 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
                 }
               })
               // If the current value is for device name
-            } else if (value.id == 28) {
+            } else if (value.id == 77) {
               device.name = value.value[0].value;  // Assigning the device name from the read
-
               // If the read is for device locaiton
-            } else {
+            } else if (value.id == 58){
               device.location = value.value[0].value; // Assigning the device location
             }
           })
@@ -173,35 +178,39 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
   }
 
   return (
-    <>
-      { devices.length > 0 ?
-        // If there are devices found with the scan
-        <TreeView
-          aria-label="customized"
-          defaultExpanded={['1']}
-          defaultCollapseIcon={<MinusSquare />}
-          defaultExpandIcon={<PlusSquare />}
-          defaultEndIcon={<CloseSquare />}
-          sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
-          style={{ textAlign: 'left' }}
-        >
-          <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>Devices</span>}>
-            {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
-            { devices.map((device) => { return <StyledTreeItem 
-                                                  onClick={() => updateDevice(device)}
-                                                  key={`${device.address}|${device.deviceId}`} 
-                                                  nodeId={`${device.nodeId}`} 
-                                                  label={<span style={{ fontSize: '0.8rem' }}>
-                                                    {`[ #${device.deviceId} ] ${device.address}`}</span>}
-                                                    /> })}
-          </StyledTreeItem>
-        </TreeView>
+      <>
+        { devices.length > 0 ?
+          // If there are devices found with the scan
+          <TreeView
+            aria-label="customized"
+            defaultExpanded={['1']}
+            defaultCollapseIcon={<MinusSquare />}
+            defaultExpandIcon={<PlusSquare />}
+            defaultEndIcon={<CloseSquare />}
+            sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
+            style={{ textAlign: 'left' }}
+          >
+              <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>Devices</span>} onClick={() => selectDevice({})}>
+              {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
+              { devices.map((device) => { return <StyledTreeItem 
+                                                    onClick={() => updateDevice(device)}
+                                                    key={`${device.address}|${device.deviceId}`} 
+                                                    nodeId={`${device.nodeId}`} 
+                                                    label={<span style={{ fontSize: '0.8rem' }}>
+                                                      {`[ #${device.deviceId} ] ${(device.name == undefined) ? device.address : `${device.name} (${device.location})`}`}</span>}
+                                                      />})}
+            </StyledTreeItem>
+          </TreeView>
 
-        : // Else
-        // If no devices are found
-        <ErrorAlert text='No devices found !' />
-    }
-  </>
+          : // Else
+          // If no devices are found
+          // <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+          //   <div style={{ width: '90%'}}>
+              <ErrorAlert text='No devices discovered !' />
+          //   </div>
+          // </div>
+        }
+      </>
   )
 }
 

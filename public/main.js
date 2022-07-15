@@ -41,7 +41,12 @@ const createWindow = () => {
 }
 
 const initBACnetClient = (bacnet) => {
-    if (client == null) client = new bacnet();
+    if (client == null) client = new bacnet(
+    // {
+        // interface: '192.168.0.13',
+        // port: '47808'
+    // }
+    );
     // initBACnetListeners(client, devices); // From the import
     initBACnetListeners();
 }

@@ -1,12 +1,14 @@
-import { Button, CircularProgress, LinearProgress } from '@mui/material'
+import { Button, CircularProgress, LinearProgress, Toolbar, Tooltip } from '@mui/material'
 import { useState } from 'react'
 
-const Scan = ({ addDevice }) => {
+const Scan = ({ addDevice, selectDevice, scanStart }) => {
 
     const [loading, setLoading] = useState(false);
     
     const addDevices = () => {
         // Start loading
+        selectDevice({});
+        scanStart();
         setLoading(true);
         window.testAPI.whoIs((response) => {
 
@@ -56,9 +58,11 @@ const Scan = ({ addDevice }) => {
     {
         !loading ? 
             // If there isn't a scan running in the momment
-            <Button onClick={addDevices} variant="outlined" style={{ borderColor: '#A3E635', color: '#A3E635'}}>
-                Scan
-            </Button>
+            <Tooltip title='Scan for devices' arrow>
+                <Button onClick={addDevices} variant="outlined" style={{ borderColor: '#A3E635', color: '#A3E635'}}>
+                    Scan
+                </Button>
+            </Tooltip>
             :
             // Progress if scan is running in the momment
             <CircularProgress style={{ color: '#A3E635'}} disableShrink/>
