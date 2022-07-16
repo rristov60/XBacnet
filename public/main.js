@@ -55,16 +55,11 @@ const initBACnetClient = (bacnet) => {
 const registerStreamListeners = () => {
     // Test function
     ipcMain.on('whoIs', (event, msg) => {
+
         // The renderer has sent us a MessagePort that it wants us to send our
         // response over.
         const [replyPort] = event.ports
       
-        // Here we send the messages synchronously, but we could just as easily store
-        // the port somewhere and send messages asynchronously.
-        // for (let i = 0; i < msg.count; i++) {
-        //   replyPort.postMessage(msg.element)
-        // }
-
         devices = [];
         whoIs();
 
@@ -73,11 +68,6 @@ const registerStreamListeners = () => {
             replyPort.close()
         }, 6000);
       
-        // We close the port when we're done to indicate to the other end that we
-        // won't be sending any more messages. This isn't strictly necessary--if we
-        // didn't explicitly close the port, it would eventually be garbage
-        // collected, which would also trigger the 'close' event in the renderer.
-        
     })
 
     ipcMain.on('listInterfaces', (event, msg) => {
@@ -163,7 +153,7 @@ const registerStreamListeners = () => {
         // response over.
         const [replyPort] = event.ports
 
-        console.log('Main read object', msg);
+        console.log('Read Multiple', msg);
       
         // Here we send the messages synchronously, but we could just as easily store
         // the port somewhere and send messages asynchronously.
@@ -177,6 +167,37 @@ const registerStreamListeners = () => {
         client.readPropertyMultiple(msg.device.address, msg.readObject, (err, value) => {
 
             console.log(err);
+                // replyPort.postMessage(msg);
+            if(!err)
+                replyPort.postMessage(value);
+            else
+                replyPort.postMessage(err);
+
+            replyPort.close();
+        });
+    })
+
+    ipcMain.on('writeToObject', (event, msg) => {
+        // The renderer has sent us a MessagePort that it wants us to send our
+        // response over.
+        const [replyPort] = event.ports
+
+        console.log('Write To Object', msg);
+      
+        // Here we send the messages synchronously, but we could just as easily store
+        // the port somewhere and send messages asynchronously.
+        // for (let i = 0; i < msg.count; i++) {
+        //   replyPort.postMessage(msg.element)
+        // }
+        
+        // type: 8, instance: 4194303, propertyId: 76 --> Reads all objects present on the device and returns their type & instance
+        // This can be after utilized to read all of the vars and so on
+        // console.log(msg.readObject);
+
+        client.writeProperty(msg.device.address, msg.writeObject.typeInstance, msg.writeObject.propertyId, msg.writeObject.theValue, { priority: 1 }, (err, value) => {
+            // co
+            console.log("Val: ", value);
+            console.log("Err: ", err);
                 // replyPort.postMessage(msg);
             if(!err)
                 replyPort.postMessage(value);

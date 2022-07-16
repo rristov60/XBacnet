@@ -66,7 +66,11 @@ const Scan = ({ addDevice, selectDevice, scanStart }) => {
             :
             // Progress if scan is running in the momment
             <CircularProgress style={{ color: '#A3E635'}} disableShrink/>
-            // <LinearProgress style={{ backgroundColor: '#A3E635', color:}}/>
+            // <>
+            //     <div>
+            //         <LinearProgress style={{ backgroundColor: '#A3E635', color: '#A3E635', width: '25%'}}/>
+            //     </div>
+            // </>
     }
     </>
   )

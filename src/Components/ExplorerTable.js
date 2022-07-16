@@ -7,19 +7,84 @@ import ErrorAlert from './ErrorAlert';
 import InfoAlert from './InfoAlert';
 import { Button } from '@mui/material';
 import AlertDialog from './AlertDialog';
+const bacnetProperties = require('../Helpers/BacnetProperties.json')
 
-export default function ExplorerTable({ variable }) {
+export default function ExplorerTable({ variable, device }) {
 
     const [open, setOpen] = React.useState(false);
     const [selectedProperty, setSelectedProperty] = React.useState({});
+    const [valueToWrite, setValueToWrite] = React.useState('UNIQUEERRSTRINGNOTTOWRITE');
 
     const handleClickOpen = (property) => {
       setSelectedProperty(property);
       setOpen(true);
     };
 
-    const handleClose = () => {
+    const handleCancel = () => {
       setOpen(false);
+    }
+
+    const handleSave = () => {
+
+      // console.log('Value to write: ', valueToWrite);
+      console.log('Variable: ', variable);
+      // console.log('The property:', selectedProperty);
+
+        const writeObject = {
+          typeInstance: {
+            type: variable.value.type,
+            instance: variable.value.instance
+          },
+          propertyId: bacnetProperties[selectedProperty.id],
+          theValue: [{
+            type: variable[selectedProperty.id].type,
+            value: valueToWrite.value
+          }]
+        };
+
+        console.table(writeObject);
+
+      if(valueToWrite != 'UNIQUEERRSTRINGNOTTOWRITE') {
+        // write to the device
+
+        //  const writeObject = {
+        //     type: variable.value.type,
+        //     instance: variable.value.instance,
+        //     theValue: {
+        //       type: bacnetTypes.selectedProperty.id,
+        //       value: valueToWrite
+        //     }
+        //  };
+
+        window.testAPI.writeToObject(device, writeObject, (response) => {
+          // Debugging the response
+            console.log(response);
+  
+            // response.values[0].values.map((value) => {
+            //   if(value.id == 77) {
+            //       variable.name = value.value[0].value;
+            //   } else if (value.id == 28) {
+            //       variable.description = value.value[0].value;
+            //   }
+            // })
+  
+            // Formatting the read properties to correspond
+            // with "enum"
+            // response.values[0].values.map((value) => {
+            //   Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
+            //     if(bacnetProperties[key] == value.id) {
+            //       variable[key] = value.value[0].value;
+            //     }
+            //   })
+            // })
+  
+            // updateDevice(device); // Updating the device
+            // selectVariable(variable);
+            setOpen(false);
+        });
+      }
+      else 
+        setOpen(false);
     };
 
     const handleRowEditCommit = (params) => {
@@ -52,7 +117,7 @@ export default function ExplorerTable({ variable }) {
           rows.push({
             id: `${key}`,
             BACnetProperty: `${formattedKey}`,
-            value: variable[key]
+            value: variable[key].value
           });
 
         }
@@ -100,7 +165,7 @@ export default function ExplorerTable({ variable }) {
         :
         // Show the actual table
         <>
-          <AlertDialog open={open} handleClose={handleClose} property={selectedProperty}/>
+          <AlertDialog open={open} handleSave={handleSave} handleCancel={handleCancel} property={selectedProperty} setValueToWrite={setValueToWrite}/>
           <DataGrid
             rows={rows(variable)}
             showColumnRightBorder={true}

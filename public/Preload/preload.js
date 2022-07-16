@@ -104,12 +104,29 @@ const readMultiple = (device, readObject, callback) => {
     }
 }
 
+const writeToObject = (device, writeObject, callback) => {
+    const { port1, port2 } = new MessageChannel();
+
+    ipcRenderer.postMessage(
+        'writeToObject',
+        { device: device, writeObject: writeObject },
+        [port2]
+    );
+    
+    port1.onmessage = (event) => {
+        callback(event.data);
+    }
+
+}
+
+
 // From the previous comment this is the correct way to use context bridge
 contextBridge.exposeInMainWorld('testAPI', {
     whoIs:  whoIs,
     readAllObjects: readAllObjects,
     readObject: readObject,
-    readMultiple: readMultiple
+    readMultiple: readMultiple,
+    writeToObject: writeToObject
 })
 
 // Api to utilize network utils

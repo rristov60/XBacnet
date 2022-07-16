@@ -138,7 +138,8 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
           response.values[0].values.map((value) => {
             Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
               if(bacnetProperties[key] == value.id) {
-                variable[key] = value.value[0].value;
+                variable[key] = { value: value.value[0].value, type: value.value[0].type };
+                // variable[key].type = value.value[0].type;
               }
             })
           })
@@ -221,7 +222,7 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
                                                   key={`${variable.value.instance}|${variable.value.type}`} /* Find something unique to addresss the variables */
                                                   nodeId={`${variable.nodeId}`} // Unique node id
                                                   label={<span style={{ fontSize: '0.78rem' }}>
-                                                    {`${(variable.OBJECT_NAME == undefined) ? `${variable.typeName} ( Instance: ${variable.value.instance} )` : `${variable.OBJECT_NAME} (${variable.typeName})`} `}
+                                                    {`${(variable.OBJECT_NAME == undefined) ? `${variable.typeName} ( Instance: ${variable.value.instance} )` : `${variable.OBJECT_NAME.value} (${variable.typeName})`} `}
                                                     </span>}
                                                     /> })}
           </StyledTreeItem>

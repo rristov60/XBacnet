@@ -115,7 +115,7 @@ function App() {
           <Grid item xs={4}>
             {/* <Devices devices={scannedDevices}/> */}
             {/* <TheCard item={<Devices devices={scannedDevices}/>} heading='Explorer'/> */}
-            <TheCard item={<ExplorerTable variable={selectedVariable}/>} heading='Explorer'/>
+            <TheCard item={<ExplorerTable variable={selectedVariable} device={selectedDevice}/>} heading='Explorer'/>
             {/* <TheCard item={<EditableTable/>} heading='Exporer'/> */}
           </Grid>
           {/* <Grid item xs={6}>

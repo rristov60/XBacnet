@@ -7,20 +7,20 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function AlertDialog({ open, handleClose, property }) {
+export default function AlertDialog({ open, handleSave, property, setValueToWrite, handleCancel }) {
   // const [open, setOpen] = React.useState(false);
 
   // const handleClickOpen = () => {
   //   setOpen(true);
   // };
 
-  // const handleClose = () => {
+  // const handleSave = () => {
   //   setOpen(false);
   // };
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}
+      <Dialog open={open} onClose={handleSave}
         PaperProps={{
           style: {
             backgroundColor: '#0c1636',
@@ -45,6 +45,7 @@ export default function AlertDialog({ open, handleClose, property }) {
             margin="dense"
             id="name"
             label={<span>{`${property.name}`}</span>}
+            onPointerLeave={(event) => { setValueToWrite({value: event.target.value}) }}
             type="text"
             fullWidth
             // variant="standard"
@@ -84,8 +85,8 @@ export default function AlertDialog({ open, handleClose, property }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} variant='outlined' style={{ borderColor: 'red', color: 'red' }}>Cancel</Button>
-          <Button onClick={handleClose} cariant='contained' style={{ backgroundColor: '#A3E635', color: '#0c1636'}}>Save</Button>
+          <Button onClick={handleCancel} variant='outlined' style={{ borderColor: 'red', color: 'red' }}>Cancel</Button>
+          <Button onClick={handleSave} cariant='contained' style={{ backgroundColor: '#A3E635', color: '#0c1636'}}>Save</Button>
         </DialogActions>
       </Dialog>
     </div>
