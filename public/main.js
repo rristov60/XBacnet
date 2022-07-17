@@ -7,6 +7,7 @@ const path = require('path');
 var client = null;
 var devices = null;
 var interfaces = null;
+var window = null;
 
 // Loading Screen
 const bacnet = require('node-bacnet'); // This might be moved to another place later
@@ -31,7 +32,8 @@ const createWindow = () => {
     }
 
     // Creation of the window
-    const window = new BrowserWindow(windowOptions);
+    
+    window = new BrowserWindow(windowOptions);
     window.loadURL('http://localhost:1234');
     // Opening the Dev Tools
     if(isDev) window.webContents.openDevTools();
@@ -53,6 +55,7 @@ const initBACnetClient = (bacnet) => {
 
 // Register stream listeners for message ports for IPC (Inter Process Communictaion)
 const registerStreamListeners = () => {
+
     // Test function
     ipcMain.on('whoIs', (event, msg) => {
 
@@ -136,7 +139,7 @@ const registerStreamListeners = () => {
         // This can be after utilized to read all of the vars and so on
         client.readProperty(msg.device.address, {type: msg.variable.type, instance: msg.variable.instance}, msg.property, (err, value) => {
 
-            console.log(err);
+            // console.log(err);
                 // replyPort.postMessage(msg);
             if(!err)
                 replyPort.postMessage(value);
@@ -199,13 +202,42 @@ const registerStreamListeners = () => {
             console.log("Val: ", value);
             console.log("Err: ", err);
                 // replyPort.postMessage(msg);
-            if(!err)
-                replyPort.postMessage(value);
-            else
-                replyPort.postMessage(err);
+
+            var response = {
+                error: err,
+                value: value
+            };
+
+            replyPort.postMessage(response);
+            // if(!err)
+            //     replyPort.postMessage(value);
+            // else
+            //     replyPort.postMessage(err);
 
             replyPort.close();
         });
+    })
+
+    ipcMain.on('subscribeCOV', (event, msg) => {
+        
+        const [replyPort] = event.ports
+
+        client.subscribeCov(msg.device.address, msg.subscribeObject.typeInstance, msg.subscribeObject.propertyId, false, false, 0, (err) => {
+            replyPort.postMessage(err);
+            replyPort.close();
+        });
+
+    })
+
+    ipcMain.on('unsubscribeCOV', (event, msg) => {
+
+        const [replyPort] = event.ports
+
+        client.subscribeCov(msg.device.address, msg.unsubscribeObject.typeInstance, msg.unsubscribeObject.propertyId, false, false, 1, (err) => {
+            replyPort.postMessage(err);
+            replyPort.close();
+        });
+
     })
 }
 
@@ -216,6 +248,18 @@ const initBACnetListeners = () => {
         client.on('iAm', (device) => {
             devices.push(device);
         });
+
+        client.on('covNotifyUnconfirmed', (data) => {
+            window.webContents.send('COV', data);
+        });
+
+        // client.subscribeCov('192.168.0.104', { type: 4, instance: 101 },85, false, false, 0, (err) => {
+        //     console.log('SubscribeCOV: ' + err);
+        // });
+
+        // setTimeout(() => { client.subscribeCov('192.168.0.104', { type: 4, instance: 101 },85, false, false, 0, (err) => {
+        //     console.log('UnsubscribeCOV: ' + err);
+        // })}, 10000);
 
     }
 

@@ -119,6 +119,41 @@ const writeToObject = (device, writeObject, callback) => {
 
 }
 
+const subscribeCOV = (device, subscribeObject, callback) => {
+
+    const { port1, port2 } = new MessageChannel();
+
+    ipcRenderer.postMessage(
+        'subscribeCOV',
+        { device: device, subscribeObject: subscribeObject },
+        [port2]
+    );
+    
+    port1.onmessage = (event) => {
+        callback(event.data);
+    }
+}
+
+const unsubscribeCOV = (device, unsubscribeObject, callback) => {
+    const { port1, port2 } = new MessageChannel();
+
+    ipcRenderer.postMessage(
+        'unsubscribeCOV',
+        { device: device, unsubscribeObject: unsubscribeObject },
+        [port2]
+    );
+    
+    port1.onmessage = (event) => {
+        callback(event.data);
+    }
+}
+
+const COVNotification = (callback) => {
+    ipcRenderer.on('COV', (event, message) => {
+        callback(message);
+    })
+}
+
 
 // From the previous comment this is the correct way to use context bridge
 contextBridge.exposeInMainWorld('testAPI', {
@@ -126,7 +161,10 @@ contextBridge.exposeInMainWorld('testAPI', {
     readAllObjects: readAllObjects,
     readObject: readObject,
     readMultiple: readMultiple,
-    writeToObject: writeToObject
+    writeToObject: writeToObject,
+    subscribeCOV: subscribeCOV,
+    COVNotification: COVNotification,
+    unsubscribeCOV: unsubscribeCOV
 })
 
 // Api to utilize network utils

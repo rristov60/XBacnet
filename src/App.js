@@ -17,6 +17,7 @@ import Charts from './Components/Charts';
 import { Card, CardContent, Typography } from '@mui/material';
 import Footer from './Components/Footer';
 import AlertDialog from './Components/AlertDialog';
+import SubscribeCOV from './Components/SusbcribeCOV';
 // let devices = [];
 
 // const getData = () => { 
@@ -65,6 +66,7 @@ function App() {
                                 && device.deviceId === theDevice.deviceId )
                                   ? theDevice 
                                   : device));
+                                  console.log('Devices: ', scannedDevices);
   }
 
   const selectDevice = (theDevice) => {
@@ -80,9 +82,11 @@ function App() {
 
   return (
       <div className="App" style={{ backgroundColor: '#0A122A' }}>
-        <header style={{ backgroundColor: '#0A122A',  width: '100%', position: 'sticky'}}>
+        <br></br>
+        <br></br>
+        {/* <header style={{ backgroundColor: '#0A122A',  width: '100%', position: 'sticky'}}>
             <img src={Logo} style={{ height: 32,  marginTop: 7 }} draggable={false}/>
-        </header>
+        </header> */}
         <Grid container 
           // justify="flex-start"
           // wrap="nowrap"
@@ -143,7 +147,13 @@ function App() {
           <Grid item xs={12}>
             <br/>
             {/* <SimpleBottomNavigation/> */}
-            <Footer children={<Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart}/>}/>
+            <Footer children={
+                <>
+                  <SubscribeCOV variable={selectedVariable} device={selectedDevice} updateDevice={updateDevice}/>
+                  <Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart}/>
+                </>
+              }
+            />
           </Grid>
           
         </Grid>

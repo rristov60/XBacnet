@@ -97,7 +97,7 @@ const divideIpPort = (string, part) => {
 const TreeVariables = ({ device, updateDevice, selectVariable }) => {
 
   const updateSelectedVar = (device, variable) => {
-    if(variable.name == undefined) {
+    if(variable.OBJECT_NAME == undefined) {
 
       // Read the stuff
       const requestArray = [
@@ -139,6 +139,8 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
             Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
               if(bacnetProperties[key] == value.id) {
                 variable[key] = { value: value.value[0].value, type: value.value[0].type };
+                variable.cov = {};
+                variable.cov.subscribed = false;
                 // variable[key].type = value.value[0].type;
               }
             })
@@ -153,7 +155,6 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
       // Select the variable and display it's properties, but for now figure out 
       // the part above
       selectVariable(variable);
-
     }
   }
 

@@ -15,8 +15,7 @@ var phantom = {
   padding: '10px',
   height: '40px',
   width: '100%',
-} 
-
+}
 
 const Footer = ({ children }) => {
   return (
