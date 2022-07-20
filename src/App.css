@@ -5,10 +5,14 @@
 }
 
 body {
-  -webkit-app-region: drag;
+  /* -webkit-app-region: drag; */
   background-color: #0A122A;
   color: white;
   overflow: hidden;
+}
+
+.header {
+  -webkit-app-region: drag;
 }
 
 * {

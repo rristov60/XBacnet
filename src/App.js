@@ -2,7 +2,7 @@
 import './App.css';
 // import Button from '@mui/material/Button';
 import  Logo  from './Assets/Logo.svg'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Scan from './Components/Scan';
 import Devices from './Components/Devices';
 import TreeDevices from './Components/TreeDevices';
@@ -28,18 +28,57 @@ import SubscribeCOV from './Components/SusbcribeCOV';
 //   })
 // }
 
+// Just a check variable to make sure the listener is added only once
+var listenerExists = false;
+var addingSubscription = false;
+
+
 
 function App() {
+  // setSubscriptions(subscriptions.map((subscription) => {
+  //   (subscription.device == theSubscription.device && subscription.type == theSubscription.type && subscription.instance == theSubscription.instance && subscription.values[subscription.values.length - 1] != theSubscription.value) ? 
+  //   subscription.values.push(theSubscription.value) : 
+  //   subscription
+  // }));
 
-  const [scannedDevices, setDevices] = useState([
-    // {
-    // header: {func: 11, sender: { address: 'blabbla'}}
-    // }
-  ]);
+  /* REGISTERING LISTENERS USING useEffect
+     Beacause otherways the changes are not propagated properly
+  */
+  useEffect(() => {
+    if(!listenerExists) {
+      window.testAPI.COVNotification((data) => {
+  
+        // console.log('Data', data);
+  
+        var subscription = {
+          device: data.header.sender.address,
+          type: data.payload.monitoredObjectId.type,
+          instance: data.payload.monitoredObjectId.instance,
+          value: { 
+            data: data.payload.values[0].value[0], 
+            time: Date.now()
+          },
+        };
+  
+        updateSubscription(subscription);
+      })
+      listenerExists = true;
+    }
+  })
+
+  
+
+  const [scannedDevices, setDevices] = useState([]);
+
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+
+  const [subscriptions, setSubscriptions] = useState([]);
 
   const [selectedDevice, setSelectedDevice] = useState({});
 
   const [selectedVariable, setSelectedVariable] = useState({});
+
+  const [lastUpdatedSubscription, setLastUpdatedSubscription] = useState(0);
 
   const scanDevices = (theDevices) => {
     setDevices(theDevices);
@@ -50,6 +89,10 @@ function App() {
     setDevices([]);
     setSelectedVariable({});
     setSelectedDevice({});
+  }
+
+  const getSubscriptions = () => {
+    return subscriptions;
   }
 
   const selectVariable = (variable) => {
@@ -80,13 +123,98 @@ function App() {
       console.log('The Selected Device: ', selected);
   }
 
+  const addSubscription = (subscription) => {
+    setActiveSubscriptions([...activeSubscriptions, subscription ]);
+  }
+
+  const removeSubscription = (subscription) => {
+    // newSubscrptions = subscriptions;
+    // var newSubscrptions = subscriptions.filter(x => (x.type != subscription.type && x.instance != subscription.instance && x.device != subscription.device));
+      // console.log(activeSubscriptions);
+      console.log('Remove Subscription: ', subscription);
+      setActiveSubscriptions(activeSubscriptions.filter(x => 
+        x.device != subscription.device ||
+        x.type != subscription.type ||
+        x.instance != subscription.instance
+      ));
+    // Remove the subscription from the subscriptions
+    // setSubscriptions(subscriptions.filter(x => (x.type != subscription.type && x.instance != subscription.instance && x.device != subscription.device)));
+  }
+
+  const updateSubscription = (theSubscription) => {
+
+    console.log('UPDATING: ', subscriptions);
+    var exists = subscriptions.filter(x => x.device == theSubscription.device && x.type == theSubscription.type && x.instance == theSubscription.instance);
+
+    if(exists.length == 0) {
+      var newSubscrptions = subscriptions;
+      delete theSubscription.time;
+      // theSubscription.values = [ theSubscription.value ];
+      // delete theSubscription.value;
+      newSubscrptions.push(theSubscription);
+      // var subscriptionsToUpdate = [...newSubscrptions];
+      // Object.assign({}, newSubscrptions)
+      setSubscriptions(newSubscrptions);
+      setLastUpdatedSubscription(Date.now());
+    } else {
+
+      if(!addingSubscription) {
+
+        console.log('Subscriptions in updateSubscription:', subscriptions);
+        var newSubscrptions = subscriptions;
+
+        if(exists[0].values == undefined) {
+          newSubscrptions[subscriptions.indexOf(exists[0])].values = [];
+        }
+
+        if(exists[0].values.length == 0) {
+          newSubscrptions[subscriptions.indexOf(exists[0])].values.push(theSubscription.value);
+          // var subscriptionsToUpdate = [...newSubscrptions];
+          // setSubscriptions(subscriptionsToUpdate);
+          // Object.assign({}, newSubscrptions)
+          setSubscriptions(newSubscrptions);
+          setLastUpdatedSubscription(Date.now());
+        }
+        else if(exists[0].values[exists[0].values.length - 1].data.value != theSubscription.value.data.value) {
+          newSubscrptions[subscriptions.indexOf(exists[0])].values.push(theSubscription.value);
+          // var subscriptionsToUpdate = [...newSubscrptions];
+          // setSubscriptions(subscriptionsToUpdate);
+          // Object.assign({}, newSubscrptions)
+          setSubscriptions(newSubscrptions);
+          setLastUpdatedSubscription(Date.now());
+        }
+
+
+        // newSubscrptions.forEach((subscription) => {
+        //   // console.log('Subscription for: ', subscription);
+        //   if((subscription.device == theSubscription.device && subscription.type == theSubscription.type && subscription.instance == theSubscription.instance && (subscription.values[subscription.values.length - 1] != theSubscription.value.value))) {
+        //     subscription.values.push(theSubscription.value)
+        //     // console.log('IN THE IF')
+        //   }
+        // })
+      }
+    }
+
+    // console.log('NewSUBSCRIPTIONS: ', newSubscrptions);
+
+    // setSubscriptions(newSubscrptions);
+    // setSubscriptions(newSubscrptions.map((subscription) => {
+    //   (subscription.device == theSubscription.device && subscription.type == theSubscription.type && subscription.instance == theSubscription.instance && subscription.values[subscription.values.length - 1] != theSubscription.value) ? 
+    //   subscription.values.push(theSubscription.value) : 
+    //   subscription
+    // }));
+
+
+    // console.log('Subscriptions', subscriptions);
+  }
+
   return (
       <div className="App" style={{ backgroundColor: '#0A122A' }}>
-        <br></br>
-        <br></br>
-        {/* <header style={{ backgroundColor: '#0A122A',  width: '100%', position: 'sticky'}}>
-            <img src={Logo} style={{ height: 32,  marginTop: 7 }} draggable={false}/>
-        </header> */}
+        <header style={{ backgroundColor: 'transparent',  width: '100%', position: 'sticky'}} className='header'>
+          <br></br>
+          <br></br>
+            {/* <img src={Logo} style={{ height: 32,  marginTop: 7 }} draggable={false}/> */}
+        </header>
         <Grid container 
           // justify="flex-start"
           // wrap="nowrap"
@@ -102,42 +230,28 @@ function App() {
           }}
           spacing={2}
         >
-          {/* <Grid item xs={12} style={{padding: 0}}>
-              <header  style={{ backgroundColor: 'transparent' }}>
-                <img src={Logo} style={{ height: 32,  marginTop: 7 }} draggable={false}/>
-                <br></br>
-              </header>
-          </Grid> */}
           <Grid item xs={3}>
+            {/* Devices tree */}
             <TheCard item={<TreeDevices devices={scannedDevices} updateDevices={updateDevice} selectDevice={selectDevice}/>} heading='Devices'/>
-            {/* <TheCard/> */}
-            {/* <ContextMenu items={<Scan addDevice={scanDevices}/>}/> */}
           </Grid>
           <Grid item xs={5}>
-            <TheCard heading='COV Subscriptions / Alarms / Periodic Polling' item={<COVTable/>}/>
+            {/* COV Subscription table */}
+            <TheCard heading='COV Subscriptions / Alarms / Periodic Polling' item={<COVTable subscriptions={subscriptions} activeSubscriptions={activeSubscriptions} lastUpdatedSubscription={lastUpdatedSubscription}/>}/>
           </Grid>
           <Grid item xs={4}>
-            {/* <Devices devices={scannedDevices}/> */}
-            {/* <TheCard item={<Devices devices={scannedDevices}/>} heading='Explorer'/> */}
-            <TheCard item={<ExplorerTable variable={selectedVariable} device={selectedDevice}/>} heading='Explorer'/>
-            {/* <TheCard item={<EditableTable/>} heading='Exporer'/> */}
+            {/* Explorer table */}
+            <TheCard item={<ExplorerTable variable={selectedVariable} device={selectedDevice} updateSubscription={updateSubscription}/>} heading='Explorer'/>
           </Grid>
-          {/* <Grid item xs={6}>
-            <TreeDevices devices={scannedDevices}/>
-          </Grid> */}
           <Grid item xs={3}>
-              <TheCard heading='Variables' item={<TreeVariables device={selectedDevice} updateDevice={updateDevice} selectVariable={selectVariable}/>}/>
-            {/* <TheCard heading='Variables' item={<TreeVariables device={device}/>}/> */}
+            {/* Objects tree */}
+              <TheCard heading='Objects' item={<TreeVariables device={selectedDevice} updateDevice={updateDevice} selectVariable={selectVariable}/>}/>
           </Grid>
           <Grid item xs={9}>
-            {/* <TheCard item={<Charts/>} heading='Variable Graph'/> */}
-            <Typography style={{ color: 'white', fontFamily: 'League Spartan'}}>Variable Graph</Typography>
+            {/* COV value graph */}
+            <Typography style={{ color: 'white', fontFamily: 'League Spartan'}}>COV Value Graph</Typography>
             <Card style={{ boxShadow: 'none' , background: '#0c1636', height: '40vh', overflow:'auto'}}>
-              {/* CardContent to store the item */}
                 <br></br>
-                <Charts/>
-                {/* <AlertDialog/> */}
-                {/* <Dialog/> */}
+                <Charts subscriptions={subscriptions} activeSubscriptions={activeSubscriptions}/>
             </Card>
             
           </Grid>
@@ -149,7 +263,7 @@ function App() {
             {/* <SimpleBottomNavigation/> */}
             <Footer children={
                 <>
-                  <SubscribeCOV variable={selectedVariable} device={selectedDevice} updateDevice={updateDevice}/>
+                  <SubscribeCOV variable={selectedVariable} device={selectedDevice} updateDevice={updateDevice} addSubscription={addSubscription} removeSubscription={removeSubscription}/>
                   <Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart}/>
                 </>
               }

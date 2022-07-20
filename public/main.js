@@ -21,6 +21,7 @@ const createWindow = () => {
             sandbox: true, // Sandbox enabled (security reasons)
             contextIsolation: true, // Context Isolation enabled as well (security reasons as well)
             preload: path.join(__dirname, 'Preload/preload.js'),
+            backgroundThrottling: false
             // enableRemoteModule: true,
         },
         minWidth: 1416,

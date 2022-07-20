@@ -10,11 +10,8 @@ import AlertDialog from './AlertDialog';
 const bacnetProperties = require('../Helpers/BacnetProperties.json')
 // const { ipcRenderer } = window.require('electron');
 
-window.testAPI.COVNotification((data) => {
-  console.log("COV From React", data);
-})
 
-export default function ExplorerTable({ variable, device }) {
+export default function ExplorerTable({ variable, device, updateSubscription }) {
 
     const [open, setOpen] = React.useState(false);
     const [selectedProperty, setSelectedProperty] = React.useState({});
