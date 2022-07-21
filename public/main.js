@@ -24,10 +24,10 @@ const createWindow = () => {
             backgroundThrottling: false
             // enableRemoteModule: true,
         },
-        minWidth: 1416,
-        minHeight: 818,
-        width: 1416,
-        height: 818,
+        // minWidth: 1366,
+        // minHeight: 768,
+        width: 1366,
+        height: 768,
         titleBarStyle: 'hiddenInset',
         // transparent: true
     }

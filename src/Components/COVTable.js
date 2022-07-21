@@ -39,8 +39,8 @@ function createData(device, objectType, instance, value, time, history, OBJECT_N
   };
 }
 
-function Row(props) {
-  const { row } = props;
+function Row({ row, setSubscriptionToPlot }) {
+  // const { row, setSubscriptionToPlot } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -51,7 +51,11 @@ function Row(props) {
             aria-label="expand row"
             size="small"
             sx={{ color: 'white'}}
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(!open);
+              setSubscriptionToPlot(row);
+              console.log('Row', row);
+            }}
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
@@ -140,7 +144,7 @@ const convertTimeStampToReadable = (timestamp) => {
 }
 
 // Table for COV Subscriptions / Alarams / Period Polling
-const COVTable = ({ subscriptions, activeSubscriptions, lastUpdatedSubscription }) => {
+const COVTable = ({ subscriptions, activeSubscriptions, setSubscriptionToPlot }) => {
 
   console.log(activeSubscriptions);
   var rows=[];
@@ -188,7 +192,7 @@ const COVTable = ({ subscriptions, activeSubscriptions, lastUpdatedSubscription 
           <TableBody>
             {/* Actual DATA */}
             {rows.map((row) => (
-              <Row key={row.name} row={row} />
+              <Row key={row.name} row={row} setSubscriptionToPlot={setSubscriptionToPlot}/>
             ))}
           </TableBody>
         </Table>

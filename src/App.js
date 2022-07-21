@@ -80,6 +80,8 @@ function App() {
 
   const [lastUpdatedSubscription, setLastUpdatedSubscription] = useState(0);
 
+  const [subscriptionToPlot, setSubscriptionToPlot] = useState({});
+
   const scanDevices = (theDevices) => {
     setDevices(theDevices);
     console.log(scannedDevices);
@@ -236,7 +238,7 @@ function App() {
           </Grid>
           <Grid item xs={5}>
             {/* COV Subscription table */}
-            <TheCard heading='COV Subscriptions / Alarms / Periodic Polling' item={<COVTable subscriptions={subscriptions} activeSubscriptions={activeSubscriptions} lastUpdatedSubscription={lastUpdatedSubscription}/>}/>
+            <TheCard heading='COV Subscriptions / Alarms / Periodic Polling' item={<COVTable subscriptions={subscriptions} activeSubscriptions={activeSubscriptions} setSubscriptionToPlot={setSubscriptionToPlot}/>}/>
           </Grid>
           <Grid item xs={4}>
             {/* Explorer table */}
@@ -251,7 +253,7 @@ function App() {
             <Typography style={{ color: 'white', fontFamily: 'League Spartan'}}>COV Value Graph</Typography>
             <Card style={{ boxShadow: 'none' , background: '#0c1636', height: '40vh', overflow:'auto'}}>
                 <br></br>
-                <Charts subscriptions={subscriptions} activeSubscriptions={activeSubscriptions}/>
+                <Charts subscriptions={subscriptions} activeSubscriptions={activeSubscriptions} subscriptionToPlot={subscriptionToPlot}/>
             </Card>
             
           </Grid>
