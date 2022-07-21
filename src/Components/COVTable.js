@@ -15,31 +15,32 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InfoAlert from './InfoAlert';
 
-function createData(name, calories, fat, carbs, protein, price) {
+function createData(device, objectType, instance, value, time, history, OBJECT_NAME) {
   return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        // amount: 3,
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        // amount: 1,
-      },
-    ],
+    device,
+    objectType,
+    instance,
+    value,
+    time,
+    // history: [
+    //   {
+    //     date: '2020-01-05',
+    //     customerId: '11091700',
+    //     // amount: 3,
+    //   },
+    //   {
+    //     date: '2020-01-02',
+    //     customerId: 'Anonymous',
+    //     // amount: 1,
+    //   },
+    // ],
+    history,
+    OBJECT_NAME
   };
 }
 
-function Row(props) {
-  const { row } = props;
+function Row({ row, setSubscriptionToPlot }) {
+  // const { row, setSubscriptionToPlot } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -50,25 +51,29 @@ function Row(props) {
             aria-label="expand row"
             size="small"
             sx={{ color: 'white'}}
-            onClick={() => setOpen(!open)}
+            onClick={() => {
+              setOpen(!open);
+              setSubscriptionToPlot(row);
+              console.log('Row', row);
+            }}
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row" sx={{ color: 'white' }}>
-          {row.name}
+          {row.device}
         </TableCell>
-        <TableCell align="right" sx={{ color: 'white' }}>{row.calories}</TableCell>
-        <TableCell align="right" sx={{ color: 'white'}}>{row.fat}</TableCell>
-        <TableCell align="right" sx={{ color: 'white'}}>{row.carbs}</TableCell>
-        <TableCell align="right" sx={{ color: 'white'}}>{row.protein}</TableCell>
+        <TableCell align="right" sx={{ color: 'white' }}>{row.objectType}</TableCell>
+        <TableCell align="right" sx={{ color: 'white'}}>{row.instance}</TableCell>
+        <TableCell align="right" sx={{ color: 'white'}}>{row.value}</TableCell>
+        <TableCell align="right" sx={{ color: 'white'}}>{row.time}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0, backgroundColor: '#0d1b42', border: 'unset' }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1  }}>
               <Typography variant="h6" gutterBottom component="div" sx={{ color: 'white', fontFamily: 'League Spartan'}}>
-                History
+                {row.OBJECT_NAME}
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
@@ -81,11 +86,11 @@ function Row(props) {
                 </TableHead>
                 <TableBody>
                   {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
+                    <TableRow key={convertTimeStampToReadable(historyRow.time)}>
                       <TableCell component="th" scope="row" sx={{ color: 'white', fontFamily: 'League Spartan'}}>
-                        {historyRow.date}
+                        {convertTimeStampToReadable(historyRow.time)}
                       </TableCell>
-                      <TableCell sx={{ color: 'white', fontFamily: 'League Spartan' }}>{historyRow.customerId}</TableCell>
+                      <TableCell sx={{ color: 'white', fontFamily: 'League Spartan' }}>{historyRow.data.value}</TableCell>
                       {/* <TableCell align="right">{historyRow.amount}</TableCell> */}
                       {/* <TableCell align="right">
                         {Math.round(historyRow.amount * row.price * 100) / 100}
@@ -131,12 +136,44 @@ const rows = [
   createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
 ];
 
+let listenerExists = false;
+
+const convertTimeStampToReadable = (timestamp) => {
+  var date = new Date(timestamp);
+  return `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`;
+}
+
 // Table for COV Subscriptions / Alarams / Period Polling
-export default function COVTable({ variable }) {
+const COVTable = ({ subscriptions, activeSubscriptions, setSubscriptionToPlot }) => {
+
+  console.log(activeSubscriptions);
+  var rows=[];
+  console.log('COV Table: ', subscriptions);
+  // console.log('COV TABLE SUBSCRIPTIONS LENGTH: ', subscriptions.length);
+  const createRows = () => {
+    activeSubscriptions.forEach((subscription) => {
+      var currentSubscription = subscriptions.filter(x => x.device == subscription.device && x.type == subscription.type && x.instance == subscription.instance);
+      if(currentSubscription.length != 0 && currentSubscription[0].values != undefined) {
+        rows.push(createData(currentSubscription[0].device, 
+                              currentSubscription[0].type, 
+                              currentSubscription[0].instance, 
+                              currentSubscription[0].values[currentSubscription[0].values.length - 1].data.value, 
+                              // currentSubscription[0].values[currentSubscription[0].values.length - 1].time, 
+                              convertTimeStampToReadable(currentSubscription[0].values[currentSubscription[0].values.length - 1].time), 
+                              currentSubscription[0].values,
+                              subscription.name
+                              ));
+      }
+
+    })
+  }
+
+  createRows();
+
   return (
     <>
     {
-      (variable?.cov == undefined) 
+      (activeSubscriptions.length == 0) 
       ?
       <InfoAlert text='No subscriptions !'/>
       :
@@ -146,8 +183,8 @@ export default function COVTable({ variable }) {
             <TableRow>
               <TableCell />
               <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Device</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Object&nbsp;ID</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Name</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Object&nbsp;Type</TableCell>
+              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Instance</TableCell>
               <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Value</TableCell>
               <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Time</TableCell>
             </TableRow>
@@ -155,7 +192,7 @@ export default function COVTable({ variable }) {
           <TableBody>
             {/* Actual DATA */}
             {rows.map((row) => (
-              <Row key={row.name} row={row} />
+              <Row key={row.name} row={row} setSubscriptionToPlot={setSubscriptionToPlot}/>
             ))}
           </TableBody>
         </Table>
@@ -165,3 +202,5 @@ export default function COVTable({ variable }) {
     
   );
 }
+
+export default COVTable;

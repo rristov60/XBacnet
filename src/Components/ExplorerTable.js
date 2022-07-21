@@ -8,8 +8,10 @@ import InfoAlert from './InfoAlert';
 import { Button } from '@mui/material';
 import AlertDialog from './AlertDialog';
 const bacnetProperties = require('../Helpers/BacnetProperties.json')
+// const { ipcRenderer } = window.require('electron');
 
-export default function ExplorerTable({ variable, device }) {
+
+export default function ExplorerTable({ variable, device, updateSubscription }) {
 
     const [open, setOpen] = React.useState(false);
     const [selectedProperty, setSelectedProperty] = React.useState({});
@@ -59,6 +61,12 @@ export default function ExplorerTable({ variable, device }) {
         window.testAPI.writeToObject(device, writeObject, (response) => {
           // Debugging the response
             console.log(response);
+
+            if(response.error == null) {
+              variable[selectedProperty.id].value = valueToWrite.value;
+              // console.log(variable[selectedProperty.id].value);
+              // update the variable
+            }
   
             // response.values[0].values.map((value) => {
             //   if(value.id == 77) {
@@ -105,7 +113,7 @@ export default function ExplorerTable({ variable, device }) {
     if(variable != undefined) {
       Object.keys(variable).map((key) => { // Getting the name of the variable type
 
-        if(key != 'value' && key != 'typeName' && key != 'nodeId') {
+        if(key != 'value' && key != 'typeName' && key != 'nodeId' && key != 'cov') {
           
           var formattedKey = key;
           formattedKey = formattedKey.replace('_', " ");

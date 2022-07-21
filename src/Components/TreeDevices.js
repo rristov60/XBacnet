@@ -187,7 +187,7 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
             defaultCollapseIcon={<MinusSquare />}
             defaultExpandIcon={<PlusSquare />}
             defaultEndIcon={<CloseSquare />}
-            sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
+            sx={{ maxHeight: '100%', flexGrow: 1, maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto'  }}
             style={{ textAlign: 'left' }}
           >
               <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>Devices</span>} onClick={() => selectDevice({})}>
