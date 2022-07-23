@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react'
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -7,20 +7,17 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function AlertDialog({ open, handleSave, property, setValueToWrite, handleCancel }) {
-  // const [open, setOpen] = React.useState(false);
+const InfoDialog = ({ open, closeDialog }) => {
 
-  // const handleClickOpen = () => {
-  //   setOpen(true);
-  // };
+    // const [open, setOpen] = useState(false);
 
-  // const handleSave = () => {
-  //   setOpen(false);
-  // };
+    // const closeDialog = () => {
+    //     setOpen(false);
+    // }
 
   return (
     <div>
-      <Dialog open={open} onClose={handleSave}
+      <Dialog open={open}
         PaperProps={{
           style: {
             backgroundColor: '#0c1636',
@@ -33,14 +30,28 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
         }}
         sx={{ backdropFilter: 'blur(8px)', transitionProperty: 'all', transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)', transitionDuration: '250ms' }}
       >
-        <DialogTitle sx={{ color: 'white' }}>{<span>Edit {property.name}</span>}</DialogTitle>
+        <DialogTitle sx={{ color: 'white' }}>{<span>App info</span>}</DialogTitle>
         <DialogContent sx={{ color: 'white' }}>
           <DialogContentText sx={{ color: 'white' }}>
-            {<span>To change <b>{property.name}</b> change the field and click on SAVE. To discard the changes and keep the current value click CANCEL.</span>}
+            {<span>change the field and click on SAVE. To discard the changes and keep the current value click CANCEL.</span>}
           </DialogContentText>
           <br></br>
           <br></br>
-          <TextField
+          {/* <FormControl fullWidth>
+            <InputLabel id="interface-select-label">Interface</InputLabel>
+            <Select
+                labelId="interface-select-label"
+                id="demo-simple-select"
+                value={age}
+                label="Age"
+                onChange={handleChange}
+            >
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+        </FormControl> */}
+          {/* <TextField
             autoFocus
             margin="dense"
             id="name"
@@ -66,6 +77,7 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
                 }
               }
             }}
+            disableUnderline
             variant='outlined'
             defaultValue={property.value}
             InputProps={{
@@ -81,13 +93,14 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
                 // backgroundColor: 'red'
               }
             }}
-          />
+          /> */}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCancel} variant='outlined' style={{ borderColor: 'red', color: 'red' }}>Cancel</Button>
-          <Button onClick={handleSave} cariant='contained' style={{ backgroundColor: '#A3E635', color: '#0c1636'}}>Save</Button>
+          <Button onClick={closeDialog} variant='outlined' style={{ borderColor: 'red', color: 'red' }}>Close</Button>
         </DialogActions>
       </Dialog>
     </div>
-  );
+  )
 }
+
+export default InfoDialog

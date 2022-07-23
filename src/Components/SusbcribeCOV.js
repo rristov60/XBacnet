@@ -1,4 +1,4 @@
-import { Button, CircularProgress, LinearProgress, Toolbar, Tooltip } from '@mui/material'
+import { Button, CircularProgress, LinearProgress, Toolbar, Tooltip, Zoom } from '@mui/material'
 import { useState } from 'react'
 
 const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeSubscription }) => {
@@ -89,25 +89,32 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
   return (
     <>
         {
-            (variable?.cov?.subscribed == false || variable?.cov?.subscribed == undefined) ? 
-                // If there isn't a scan running in the momment
-                <Tooltip title='Scan for devices' arrow>
-                    <Button onClick={subscribeCOV} variant="outlined" style={{ borderColor: '#A3E635', color: '#A3E635'}}>
-                        Subscribe COV
-                    </Button>
-                </Tooltip>
-                :
-                // Progress if scan is running in the momment
-                <Tooltip title='Scan for devices' arrow>
-                    <Button onClick={unSubscribeCOV} variant="outlined" style={{ borderColor: 'red', color: 'red'}}>
-                        Unsubscribe COV
-                    </Button>
-                </Tooltip>
-                // <>
-                //     <div>
-                //         <LinearProgress style={{ backgroundColor: '#A3E635', color: '#A3E635', width: '25%'}}/>
-                //     </div>
-                // </>
+            ( Object.keys(variable).length === 0 ) ? 
+                <></>
+            :
+            <>
+            {
+                (variable?.cov?.subscribed == false || variable?.cov?.subscribed == undefined) ? 
+                    // If there isn't a scan running in the momment
+                    <Tooltip title='Subscribe to COV for the selected object' TransitionComponent={Zoom} arrow>
+                        <Button onClick={subscribeCOV} variant="outlined" style={{ borderColor: '#A3E635', color: '#A3E635'}}>
+                            Subscribe COV
+                        </Button>
+                    </Tooltip>
+                    :
+                    // Progress if scan is running in the momment
+                    <Tooltip title='Unsubscribe to COV for the selected object' TransitionComponent={Zoom} sx={{ backgroundColor: 'transparent' }} arrow>
+                        <Button onClick={unSubscribeCOV} variant="outlined" style={{ borderColor: 'red', color: 'red'}}>
+                            Unsubscribe COV
+                        </Button>
+                    </Tooltip>
+                    // <>
+                    //     <div>
+                    //         <LinearProgress style={{ backgroundColor: '#A3E635', color: '#A3E635', width: '25%'}}/>
+                    //     </div>
+                    // </>
+            }
+            </>
         }
     </>
   )

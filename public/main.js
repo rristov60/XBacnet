@@ -8,6 +8,7 @@ var client = null;
 var devices = null;
 var interfaces = null;
 var window = null;
+var activeInterface = '0.0.0.0';
 
 // Loading Screen
 const bacnet = require('node-bacnet'); // This might be moved to another place later
@@ -43,15 +44,24 @@ const createWindow = () => {
     // window.loadFile('main.html');
 }
 
-const initBACnetClient = (bacnet) => {
-    if (client == null) client = new bacnet(
-    // {
-        // interface: '192.168.0.13',
-        // port: '47808'
-    // }
-    );
+const initBACnetClient = (bacnet, interface) => {
+    if (client == null) {
+        var splitInterface = interface.split('.');
+        var broadcastAddress = `${splitInterface[0]}.${splitInterface[1]}.${splitInterface[2]}.255`;
+        if (interface != '0.0.0.0') {
+            client = new bacnet({
+                interface: interface,
+                broadcastAddress: broadcastAddress,
+                apduTimeout: 6000
+            });
+        } else {
+            client = new bacnet({
+                apduTimeout: 6000
+            });
+        }
+        initBACnetListeners();
+    } 
     // initBACnetListeners(client, devices); // From the import
-    initBACnetListeners();
 }
 
 // Register stream listeners for message ports for IPC (Inter Process Communictaion)
@@ -63,8 +73,24 @@ const registerStreamListeners = () => {
         // The renderer has sent us a MessagePort that it wants us to send our
         // response over.
         const [replyPort] = event.ports
+
+        console.log('The interface from main: ', msg.interface);
+
+        if(msg.interface != activeInterface) {
+            client.close();
+            client = null;
+            console.log(client);
+            activeInterface = msg.interface;
+            initBACnetClient(bacnet, activeInterface);
+            // console.log('Different interface !');
+            // console.table('New interface: ' + activeInterface);
+            // var splitInterface = msg.interface.split('.');
+            // var broadcastAddress = `${splitInterface[0]}.${splitInterface[1]}.${splitInterface[2]}.255`;
+            // console.log(broadcastAddress);
+        }
       
         devices = [];
+        console.log(client);
         whoIs();
 
         setTimeout(() => {
@@ -114,10 +140,18 @@ const registerStreamListeners = () => {
         // This can be after utilized to read all of the vars and so on
         client.readProperty(msg.address, {type: 8, instance: 4194303}, 76, (err, value) => {
                 // replyPort.postMessage(msg);
-            if(!err)
-                replyPort.postMessage(value);
-            else
-                replyPort.postMessage(err);
+
+            var response = {
+                error: err,
+                value: value
+            };
+
+            replyPort.postMessage(response);
+
+            // if(!err)
+            //     replyPort.postMessage(value);
+            // else
+            //     replyPort.postMessage(err);
 
             replyPort.close();
         });
@@ -140,12 +174,18 @@ const registerStreamListeners = () => {
         // This can be after utilized to read all of the vars and so on
         client.readProperty(msg.device.address, {type: msg.variable.type, instance: msg.variable.instance}, msg.property, (err, value) => {
 
+            var response = {
+                error: err,
+                value: value
+            };
+
+            replyPort.postMessage(response);
             // console.log(err);
-                // replyPort.postMessage(msg);
-            if(!err)
-                replyPort.postMessage(value);
-            else
-                replyPort.postMessage(err);
+            //     // replyPort.postMessage(msg);
+            // if(!err)
+            //     replyPort.postMessage(value);
+            // else
+            //     replyPort.postMessage(err);
 
             replyPort.close();
         });
@@ -167,15 +207,21 @@ const registerStreamListeners = () => {
         
         // type: 8, instance: 4194303, propertyId: 76 --> Reads all objects present on the device and returns their type & instance
         // This can be after utilized to read all of the vars and so on
-        console.log(msg.readObject);
+        // console.log(msg.readObject);
         client.readPropertyMultiple(msg.device.address, msg.readObject, (err, value) => {
 
-            console.log(err);
-                // replyPort.postMessage(msg);
-            if(!err)
-                replyPort.postMessage(value);
-            else
-                replyPort.postMessage(err);
+            var response = {
+                error: err,
+                value: value
+            };
+
+            replyPort.postMessage(response);
+            // console.log(err);
+            //     // replyPort.postMessage(msg);
+            // if(!err)
+            //     replyPort.postMessage(value);
+            // else
+            //     replyPort.postMessage(err);
 
             replyPort.close();
         });
@@ -186,7 +232,7 @@ const registerStreamListeners = () => {
         // response over.
         const [replyPort] = event.ports
 
-        console.log('Write To Object', msg);
+        // console.log('Write To Object', msg);
       
         // Here we send the messages synchronously, but we could just as easily store
         // the port somewhere and send messages asynchronously.
@@ -200,8 +246,8 @@ const registerStreamListeners = () => {
 
         client.writeProperty(msg.device.address, msg.writeObject.typeInstance, msg.writeObject.propertyId, msg.writeObject.theValue, { priority: 1 }, (err, value) => {
             // co
-            console.log("Val: ", value);
-            console.log("Err: ", err);
+            // console.log("Val: ", value);
+            // console.log("Err: ", err);
                 // replyPort.postMessage(msg);
 
             var response = {
@@ -281,7 +327,7 @@ app.whenReady().then(() => {
 
     registerStreamListeners(); // This is for registering stream listeners
 
-    initBACnetClient(bacnet); // For Initialising client
+    initBACnetClient(bacnet, activeInterface); // For Initialising client
 
     
     // Main Window

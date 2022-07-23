@@ -33,7 +33,6 @@ var listenerExists = false;
 var addingSubscription = false;
 
 
-
 function App() {
   // setSubscriptions(subscriptions.map((subscription) => {
   //   (subscription.device == theSubscription.device && subscription.type == theSubscription.type && subscription.instance == theSubscription.instance && subscription.values[subscription.values.length - 1] != theSubscription.value) ? 
@@ -77,6 +76,8 @@ function App() {
   const [selectedDevice, setSelectedDevice] = useState({});
 
   const [selectedVariable, setSelectedVariable] = useState({});
+
+  const [activeInterface, setActiveInterface] = useState('');
 
   const [lastUpdatedSubscription, setLastUpdatedSubscription] = useState(0);
 
@@ -264,11 +265,15 @@ function App() {
             <br/>
             {/* <SimpleBottomNavigation/> */}
             <Footer children={
-                <>
+                <div style={{ display: 'flex', justifyContent: 'end' }}>
                   <SubscribeCOV variable={selectedVariable} device={selectedDevice} updateDevice={updateDevice} addSubscription={addSubscription} removeSubscription={removeSubscription}/>
-                  <Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart}/>
-                </>
+                  <div style={{ width: '3%' }}>
+
+                  </div>
+                  <Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart} setActiveInterface={setActiveInterface}/>
+                </div>
               }
+              activeInterface={activeInterface}
             />
           </Grid>
           

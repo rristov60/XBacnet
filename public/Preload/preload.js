@@ -2,7 +2,7 @@
 const { ipcRenderer, contextBridge } = require('electron');
 
 // Example fucnction
-const whoIs = (callback) => {
+const whoIs = (interface, callback) => {
     // MessageChannels are lightweight--it's cheap to create a new one for each
     // request.
     const { port1, port2 } = new MessageChannel();
@@ -16,7 +16,7 @@ const whoIs = (callback) => {
 
     ipcRenderer.postMessage(
         'whoIs',
-        {},
+        { interface: interface },
         [port2]
     );
 
