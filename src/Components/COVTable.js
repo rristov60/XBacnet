@@ -14,6 +14,7 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InfoAlert from './InfoAlert';
+import Toast from './Toast';
 
 function createData(device, objectType, instance, value, time, history, OBJECT_NAME) {
   return {
@@ -177,26 +178,26 @@ const COVTable = ({ subscriptions, activeSubscriptions, setSubscriptionToPlot })
       ?
       <InfoAlert text='No subscriptions !'/>
       :
-        <TableContainer component={Paper} sx={{ backgroundColor: 'transparent'}}>
-        <Table aria-label="collapsible table">
-          <TableHead>
-            <TableRow>
-              <TableCell />
-              <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Device</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Object&nbsp;Type</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Instance</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Value</TableCell>
-              <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Time</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {/* Actual DATA */}
-            {rows.map((row) => (
-              <Row key={row.name} row={row} setSubscriptionToPlot={setSubscriptionToPlot}/>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <TableContainer component={Paper} sx={{ backgroundColor: 'transparent'}}>
+      <Table aria-label="collapsible table">
+        <TableHead>
+          <TableRow>
+            <TableCell />
+            <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Device</TableCell>
+            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Object&nbsp;Type</TableCell>
+            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Instance</TableCell>
+            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Value</TableCell>
+            <TableCell align="right" sx={{ color: 'white', fontFamily: 'League Spartan'}}>Time</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {/* Actual DATA */}
+          {rows.map((row) => (
+            <Row key={row.name} row={row} setSubscriptionToPlot={setSubscriptionToPlot}/>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
     }
     </>
     

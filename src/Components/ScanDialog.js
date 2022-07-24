@@ -84,7 +84,7 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
   };
 
   const menuItems = interfaces.map(item => (
-    <MenuItem value={item.address}>{item.interface}: {item.address}</MenuItem>
+    <MenuItem key={item.address} value={item.address}>{item.interface}: {item.address}</MenuItem>
   ));
   
   const addDevices = () => {
@@ -133,7 +133,9 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
 
         // End Loading
         setOpen(false);
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
     });
   }
 

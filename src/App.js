@@ -92,6 +92,9 @@ function App() {
     setDevices([]);
     setSelectedVariable({});
     setSelectedDevice({});
+    setSubscriptionToPlot({});
+    setSubscriptions([]);
+    setActiveSubscriptions([]);
   }
 
   const getSubscriptions = () => {

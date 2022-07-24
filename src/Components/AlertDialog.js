@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Toast from './Toast';
 
 export default function AlertDialog({ open, handleSave, property, setValueToWrite, handleCancel }) {
   // const [open, setOpen] = React.useState(false);
@@ -20,7 +21,7 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
 
   return (
     <div>
-      <Dialog open={open} onClose={handleSave}
+      <Dialog open={open} onClose={handleCancel}
         PaperProps={{
           style: {
             backgroundColor: '#0c1636',
@@ -88,6 +89,7 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
           <Button onClick={handleSave} cariant='contained' style={{ backgroundColor: '#A3E635', color: '#0c1636'}}>Save</Button>
         </DialogActions>
       </Dialog>
+      {/* <Toast open={toastOpen} message={toastMessage} type={toastType}/> */}
     </div>
   );
 }

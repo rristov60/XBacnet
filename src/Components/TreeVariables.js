@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 import SvgIcon from '@mui/material/SvgIcon';
 import { alpha, styled } from '@mui/material/styles';
 import TreeView from '@mui/lab/TreeView';
@@ -9,6 +10,7 @@ import { useSpring, animated } from 'react-spring'
 import Typography from 'react';
 import ErrorAlert from './ErrorAlert';
 import WarningAlert from './WarningAlert';
+import Toast from './Toast';
 const bacnetProperties = require('../Helpers/BacnetProperties.json')
 
 function MinusSquare(props) {
@@ -95,6 +97,9 @@ const divideIpPort = (string, part) => {
 }
 
 const TreeVariables = ({ device, updateDevice, selectVariable }) => {
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState('');
+  const [toastType, setToastType] = React.useState('success');
 
   const updateSelectedVar = (device, variable) => {
     if(variable.OBJECT_NAME == undefined) {
@@ -123,7 +128,7 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
 
       window.testAPI.readMultiple(device, requestArray, (response) => {
         // Debugging the response
-          console.log(response);
+          // console.log(response);
 
           // response.values[0].values.map((value) => {
           //   if(value.id == 77) {
@@ -135,19 +140,35 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
 
           // Formatting the read properties to correspond
           // with "enum"
-          response.values[0].values.map((value) => {
-            Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
-              if(bacnetProperties[key] == value.id) {
-                variable[key] = { value: value.value[0].value, type: value.value[0].type };
-                variable.cov = {};
-                variable.cov.subscribed = false;
-                // variable[key].type = value.value[0].type;
-              }
+          if(!response.error) {
+            response.value.values[0].values.map((value) => {
+              Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
+                if(bacnetProperties[key] == value.id) {
+                  variable[key] = { value: value.value[0].value, type: value.value[0].type };
+                  variable.cov = {};
+                  variable.cov.subscribed = false;
+                  // variable[key].type = value.value[0].type;
+                }
+              })
             })
-          })
-
+            
+            setToastMessage(`Successfully read object: ${variable.OBJECT_NAME.value}!`);
+            setToastType('success');
+            setToastOpen(true);
+            setTimeout(() => {
+              setToastOpen(false);
+            }, 1000);
+          } else {
+            setToastMessage(`An error occurred: ${response.error}!`);
+            setToastType('error');
+            setToastOpen(true);
+            setTimeout(() => {
+              setToastOpen(false);
+            }, 4000)
+          }
           updateDevice(device); // Updating the device
           selectVariable(variable);
+
       });
 
     } else {
@@ -207,33 +228,35 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
     <>
       { (device?.variables?.length > 0) ?
         // If there are devices found with the scan
-        <TreeView
-          aria-label="customized"
-          defaultExpanded={['1']}
-          defaultCollapseIcon={<MinusSquare />}
-          defaultExpandIcon={<PlusSquare />}
-          defaultEndIcon={<CloseSquare />}
-          sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
-          style={{ textAlign: 'left' }}
-        >
-          <StyledTreeItem nodeId="1" onClick={() => {{selectVariable({})}}} label={<span style={{ fontSize: '0.9rem' }}>{`${device.name} \n [ IP: ${device.address}, #${device.deviceId} ]`}</span>}>
-            {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
-            { device.variables.map((variable) => { return <StyledTreeItem 
-                                                  onClick={() => {updateSelectedVar(device, variable); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}
-                                                  key={`${variable.value.instance}|${variable.value.type}`} /* Find something unique to addresss the variables */
-                                                  nodeId={`${variable.nodeId}`} // Unique node id
-                                                  label={<span style={{ fontSize: '0.78rem' }}>
-                                                    {`${(variable.OBJECT_NAME == undefined) ? `${variable.typeName} ( Instance: ${variable.value.instance} )` : `${variable.OBJECT_NAME.value} (${variable.typeName})`} `}
-                                                    </span>}
-                                                    /> })}
-          </StyledTreeItem>
-        </TreeView>
-
+        <>
+          <TreeView
+            aria-label="customized"
+            defaultExpanded={['1']}
+            defaultCollapseIcon={<MinusSquare />}
+            defaultExpandIcon={<PlusSquare />}
+            defaultEndIcon={<CloseSquare />}
+            sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
+            style={{ textAlign: 'left' }}
+          >
+            <StyledTreeItem nodeId="1" onClick={() => {{selectVariable({})}}} label={<span style={{ fontSize: '0.9rem' }}>{`${device.name} \n [ IP: ${device.address}, #${device.deviceId} ]`}</span>}>
+              {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
+              { device.variables.map((variable) => { return <StyledTreeItem 
+                                                    onClick={() => {updateSelectedVar(device, variable); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}
+                                                    key={`${variable.value.instance}|${variable.value.type}`} /* Find something unique to addresss the variables */
+                                                    nodeId={`${variable.nodeId}`} // Unique node id
+                                                    label={<span style={{ fontSize: '0.78rem' }}>
+                                                      {`${(variable.OBJECT_NAME == undefined) ? `${variable.typeName} ( Instance: ${variable.value.instance} )` : `${variable.OBJECT_NAME.value} (${variable.typeName})`} `}
+                                                      </span>}
+                                                      /> })}
+            </StyledTreeItem>
+          </TreeView>
+          <Toast open={toastOpen} message={toastMessage} type={toastType}/>
+        </>
         : // Else
         // If no devices are found
         // <ErrorAlert text={`${(device == undefined) ? `No variables found for #${device.deviceId}` : 'No variables found' } !`}/>
         // <ErrorAlert text={`No variables discovered !`}/>
-        <WarningAlert text={`No variables discovered !`} tooltip='Riste'/>
+        <WarningAlert text={`No variables discovered !`}/>
     }
   </>
   )

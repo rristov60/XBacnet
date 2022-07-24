@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 import SvgIcon from '@mui/material/SvgIcon';
 import { alpha, styled } from '@mui/material/styles';
 import TreeView from '@mui/lab/TreeView';
@@ -7,6 +8,7 @@ import Collapse from '@mui/material/Collapse';
 import { useSpring, animated, update } from 'react-spring'
 import ErrorAlert from './ErrorAlert';
 import { Tooltip } from 'recharts';
+import Toast from './Toast';
 
 const bacnetTypes = require('../Helpers/BacnetTypes.json');
 
@@ -97,6 +99,10 @@ const divideIpPort = (string, part) => {
 
 const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
 
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState('');
+  const [toastType, setToastType] = React.useState('success');
+
   const updateDevice = (device) => {
 
     console.log(device);
@@ -133,34 +139,49 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
       window.testAPI.readMultiple(device, intialReadRequestArray, (response) => {
         // Debugging the response
         // console.log(response);
-          response.values[0].values.map((value) => {
+        if(!response.error) {
+            response.value.values[0].values.map((value) => {
 
-            // For each response (since it is a multiple read, we check the id that corresponds with the property id)
+              // For each response (since it is a multiple read, we check the id that corresponds with the property id)
 
-            // If the current value is for all of the objects on the device
-            if (value.id == 76) {
-              device.variables=[];  // Initialize the device variable array
-              value.value.forEach((variable) => { // Loop through each variable 
-                if(variable.value.type != 8) {
-                  variable.nodeId = i; // Unique (per tree) Node id 
-                  Object.keys(bacnetTypes).map((key) => { // Getting the name of the variable type
-                    if(bacnetTypes[key] == variable.value.type) {
-                      variable.typeName = key;
-                      console.log(variable.typeName);
-                    }
-                  })
-                  i++; // Incrementing the node id
-                  device.variables.push(variable); // Adding the variable to the device
-                }
-              })
-              // If the current value is for device name
-            } else if (value.id == 77) {
-              device.name = value.value[0].value;  // Assigning the device name from the read
-              // If the read is for device locaiton
-            } else if (value.id == 58){
-              device.location = value.value[0].value; // Assigning the device location
-            }
-          })
+              // If the current value is for all of the objects on the device
+              if (value.id == 76) {
+                device.variables=[];  // Initialize the device variable array
+                value.value.forEach((variable) => { // Loop through each variable 
+                  if(variable.value.type != 8) {
+                    variable.nodeId = i; // Unique (per tree) Node id 
+                    Object.keys(bacnetTypes).map((key) => { // Getting the name of the variable type
+                      if(bacnetTypes[key] == variable.value.type) {
+                        variable.typeName = key;
+                        console.log(variable.typeName);
+                      }
+                    })
+                    i++; // Incrementing the node id
+                    device.variables.push(variable); // Adding the variable to the device
+                  }
+                })
+                // If the current value is for device name
+              } else if (value.id == 77) {
+                device.name = value.value[0].value;  // Assigning the device name from the read
+                // If the read is for device locaiton
+              } else if (value.id == 58){
+                device.location = value.value[0].value; // Assigning the device location
+              }
+            })
+            setToastMessage(`Successfully read all variables for #${device.deviceId}!`);
+            setToastType('success');
+            setToastOpen(true);
+            setTimeout(() => {
+              setToastOpen(false);
+            }, 1000)
+        } else {
+          setToastMessage(`An error occurred: ${response.error}!`);
+          setToastType('error');
+          setToastOpen(true);
+          setTimeout(() => {
+            setToastOpen(false);
+          }, 1000)
+        }
 
           // The properties above are enough for initial reading
 
@@ -181,27 +202,29 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
       <>
         { devices.length > 0 ?
           // If there are devices found with the scan
-          <TreeView
-            aria-label="customized"
-            defaultExpanded={['1']}
-            defaultCollapseIcon={<MinusSquare />}
-            defaultExpandIcon={<PlusSquare />}
-            defaultEndIcon={<CloseSquare />}
-            sx={{ maxHeight: '100%', flexGrow: 1, maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto'  }}
-            style={{ textAlign: 'left' }}
-          >
-              <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>Devices</span>} onClick={() => selectDevice({})}>
-              {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
-              { devices.map((device) => { return <StyledTreeItem 
-                                                    onClick={() => updateDevice(device)}
-                                                    key={`${device.address}|${device.deviceId}`} 
-                                                    nodeId={`${device.nodeId}`} 
-                                                    label={<span style={{ fontSize: '0.8rem' }}>
-                                                      {`[ #${device.deviceId} ] ${(device.name == undefined) ? device.address : `${device.name} (${device.location})`}`}</span>}
-                                                      />})}
-            </StyledTreeItem>
-          </TreeView>
-
+          <>
+            <TreeView
+              aria-label="customized"
+              defaultExpanded={['1']}
+              defaultCollapseIcon={<MinusSquare />}
+              defaultExpandIcon={<PlusSquare />}
+              defaultEndIcon={<CloseSquare />}
+              sx={{ maxHeight: '100%', flexGrow: 1, maxWidth: '100%', overflowX: 'hidden', overflowY: 'auto'  }}
+              style={{ textAlign: 'left' }}
+            >
+                <StyledTreeItem nodeId="1" label={<span style={{ fontSize: '0.9rem' }}>Devices</span>} onClick={() => selectDevice({})}>
+                {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
+                { devices.map((device) => { return <StyledTreeItem 
+                                                      onClick={() => updateDevice(device)}
+                                                      key={`${device.address}|${device.deviceId}`} 
+                                                      nodeId={`${device.nodeId}`} 
+                                                      label={<span style={{ fontSize: '0.8rem' }}>
+                                                        {`[ #${device.deviceId} ] ${(device.name == undefined) ? device.address : `${device.name} (${device.location})`}`}</span>}
+                                                        />})}
+              </StyledTreeItem>
+            </TreeView>
+            <Toast open={toastOpen} message={toastMessage} type={toastType}/>
+          </>
           : // Else
           // If no devices are found
           // <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>

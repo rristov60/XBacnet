@@ -7,6 +7,7 @@ import ErrorAlert from './ErrorAlert';
 import InfoAlert from './InfoAlert';
 import { Button } from '@mui/material';
 import AlertDialog from './AlertDialog';
+import Toast from './Toast';
 const bacnetProperties = require('../Helpers/BacnetProperties.json')
 // const { ipcRenderer } = window.require('electron');
 
@@ -16,6 +17,10 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     const [open, setOpen] = React.useState(false);
     const [selectedProperty, setSelectedProperty] = React.useState({});
     const [valueToWrite, setValueToWrite] = React.useState('UNIQUEERRSTRINGNOTTOWRITE');
+
+    const [toastOpen, setToastOpen] = React.useState(false);
+    const [toastMessage, setToastMessage] = React.useState('');
+    const [toastType, setToastType] = React.useState('success');
 
     const handleClickOpen = (property) => {
       setSelectedProperty(property);
@@ -66,6 +71,14 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
               variable[selectedProperty.id].value = valueToWrite.value;
               // console.log(variable[selectedProperty.id].value);
               // update the variable
+              setToastMessage(`Successfully written ${writeObject.theValue[0].value} to ${variable.OBJECT_NAME.value}!`);
+              setToastType('success');
+              setToastOpen(true);
+              setTimeout(() => {
+                setToastOpen(false);
+              }, 1000);
+            } else {
+
             }
   
             // response.values[0].values.map((value) => {
@@ -208,6 +221,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             sortModel={undefined}
             // experimentalFeatures={{ newEditingApi: true }}
           />
+          <Toast open={toastOpen} message={toastMessage} type={toastType}/>
         </>
       }
     </div>
@@ -217,42 +231,4 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
 const columns = [
   { field: 'BACnetProperty', headerName: 'BACnet Property', width: 190, editable: false, headerAlign: 'center', disableColumnMenu: true, sortable: false },
   { field: 'value', headerName: 'Value', width: 190, editable: true, headerAlign: 'center', disableColumnMenu: true, sortable: false }
-];
-
-const rows = [
-  {
-    id: 'varId|PropertyId',
-    BACnetProperty: randomTraderName(),
-    value: 25,
-  },
-  {
-    id: 2,
-    BACnetProperty: randomTraderName(),
-    value: 36,
-  },
-  {
-    id: 3,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 4,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 5,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 6,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 7,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  }
 ];
