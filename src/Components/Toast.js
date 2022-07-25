@@ -26,7 +26,7 @@ const Toast = ({ open, message, type, cov = 'false'}) => {
                     <Alert
                         severity={type}
                         // severity='error'
-                        TransitionComponent={SlideTransition}
+                        // TransitionComponent={SlideTransition}
                         // action={
                         // <IconButton
                         //     aria-label="close"
@@ -58,7 +58,7 @@ const Toast = ({ open, message, type, cov = 'false'}) => {
                 <Alert
                     severity={type}
                     // severity='error'
-                    TransitionComponent={SlideTransition}
+                    // TransitionComponent={SlideTransition}
                     // action={
                     // <IconButton
                     //     aria-label="close"

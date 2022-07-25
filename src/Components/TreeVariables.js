@@ -180,49 +180,6 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
   }
 
 
-  // const readAllVars = (device) => {
-  //   var requestArray = [];
-
-  //   device.variables.forEach((variable) => {
-  //     if(variable.name == undefined) {
-  //       requestArray.push({
-  //         objectId:
-  //         {
-  //           type: variable.value.type,
-  //           instance: variable.value.instance
-  //         },
-  //         properties: [
-  //           {  // Read the name of the device(object)
-  //             id: 77
-  //           }, 
-  //           { // Read the description of the device
-  //             id: 28
-  //           },
-  //           {  // Try to read all of the device properties
-  //             // currently it fails, no idea why
-  //             id: 8
-  //           }
-  //         ]
-  //       });
-
-  //       window.testAPI.readMultiple(device, requestArray, (response) => {
-  //         // Debugging the response
-  //           console.log(response);
-  //           reponse.values.forEach((value) => {
-
-  //           })
-  //           // response.values[0].values.map((value) => {
-  //           //   if(value.id == 77) {
-  //           //       variable.name = value.value[0].value;
-  //           //   } else if (value .id == 28) {
-  //           //       variable.description = value.value[0].value;
-  //           //   }
-  //           //   updateDevice(device); // Updating the device
-  //           // })
-  //       });
-  //     }
-  //   })
-  // }
 
   return (
     <>

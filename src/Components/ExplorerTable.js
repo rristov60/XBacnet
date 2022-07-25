@@ -17,6 +17,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     const [open, setOpen] = React.useState(false);
     const [selectedProperty, setSelectedProperty] = React.useState({});
     const [valueToWrite, setValueToWrite] = React.useState('UNIQUEERRSTRINGNOTTOWRITE');
+    const [objectToWrite, setObjectToWrite] = React.useState({});
 
     const [toastOpen, setToastOpen] = React.useState(false);
     const [toastMessage, setToastMessage] = React.useState('');
@@ -28,6 +29,10 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     };
 
     const handleCancel = () => {
+      console.log("value to write:", valueToWrite);
+      setValueToWrite('UNIQUEERRSTRINGNOTTOWRITE');
+      setSelectedProperty({});
+      setObjectToWrite({});
       setOpen(false);
     }
 
@@ -36,8 +41,9 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
       // console.log('Value to write: ', valueToWrite);
       console.log('Variable: ', variable);
       // console.log('The property:', selectedProperty);
-
-        const writeObject = {
+      var writeObject = null;
+      if(!valueToWrite.isObject) {
+        writeObject = {
           typeInstance: {
             type: variable.value.type,
             instance: variable.value.instance
@@ -48,6 +54,20 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             value: valueToWrite.value
           }]
         };
+      } else {
+        delete valueToWrite.isObject;
+        writeObject = {
+          typeInstance: {
+            type: variable.value.type,
+            instance: variable.value.instance
+          },
+          propertyId: bacnetProperties[selectedProperty.id],
+          theValue: [{
+            type: variable[selectedProperty.id].type,
+            value: valueToWrite
+          }]
+        };
+      }
 
         console.table(writeObject);
 
@@ -138,7 +158,8 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
           rows.push({
             id: `${key}`,
             BACnetProperty: `${formattedKey}`,
-            value: variable[key].value
+            value: (typeof variable[key].value === 'object' && variable[key].value !== null && key != 'MODIFICATION_DATE') ? '{ Object }' : variable[key].value,
+            object: variable[key].value
           });
 
         }
@@ -186,7 +207,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         :
         // Show the actual table
         <>
-          <AlertDialog open={open} handleSave={handleSave} handleCancel={handleCancel} property={selectedProperty} setValueToWrite={setValueToWrite}/>
+          <AlertDialog open={open} handleSave={handleSave} handleCancel={handleCancel} property={selectedProperty} setValueToWrite={setValueToWrite} setObjectToWrite={setObjectToWrite} objectToWrite={objectToWrite}/>
           <DataGrid
             rows={rows(variable)}
             showColumnRightBorder={true}
@@ -200,7 +221,8 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
               var property = {
                 name: params.row.BACnetProperty,
                 value: params.row.value,
-                id: params.row.id
+                id: params.row.id,
+                object: params.row.object
               }
               handleClickOpen(property);
             }}

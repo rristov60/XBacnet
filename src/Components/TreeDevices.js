@@ -129,6 +129,9 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
             },
             { // Read device location
               id: 58
+            },
+            {
+              id: 8
             }
           ]
         }
@@ -138,7 +141,7 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
       let i = 2;
       window.testAPI.readMultiple(device, intialReadRequestArray, (response) => {
         // Debugging the response
-        // console.log(response);
+        // console.log('Response for treeDevice: ', response);
         if(!response.error) {
             response.value.values[0].values.map((value) => {
 
