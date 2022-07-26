@@ -21,9 +21,9 @@ import SubscribeCOV from './Components/SusbcribeCOV';
 // let devices = [];
 
 // const getData = () => { 
-//   window.testAPI.whoIs((data) => {
+//   window.bacnet.whoIs((data) => {
 //     // devices = data;
-//     console.log('From Scan:', data)
+//     //console.log('From Scan:', data)
 //     // return event.data;
 //   })
 // }
@@ -31,7 +31,6 @@ import SubscribeCOV from './Components/SusbcribeCOV';
 // Just a check variable to make sure the listener is added only once
 var listenerExists = false;
 var addingSubscription = false;
-
 
 
 function App() {
@@ -46,9 +45,9 @@ function App() {
   */
   useEffect(() => {
     if(!listenerExists) {
-      window.testAPI.COVNotification((data) => {
+      window.bacnet.COVNotification((data) => {
   
-        // console.log('Data', data);
+        // //console.log('Data', data);
   
         var subscription = {
           device: data.header.sender.address,
@@ -78,19 +77,24 @@ function App() {
 
   const [selectedVariable, setSelectedVariable] = useState({});
 
+  const [activeInterface, setActiveInterface] = useState('');
+
   const [lastUpdatedSubscription, setLastUpdatedSubscription] = useState(0);
 
   const [subscriptionToPlot, setSubscriptionToPlot] = useState({});
 
   const scanDevices = (theDevices) => {
     setDevices(theDevices);
-    console.log(scannedDevices);
+    //console.log(scannedDevices);
   }
 
   const scanStart = () => {
     setDevices([]);
     setSelectedVariable({});
     setSelectedDevice({});
+    setSubscriptionToPlot({});
+    setSubscriptions([]);
+    setActiveSubscriptions([]);
   }
 
   const getSubscriptions = () => {
@@ -98,7 +102,7 @@ function App() {
   }
 
   const selectVariable = (variable) => {
-    console.log('Selected var: ', variable);
+    //console.log('Selected var: ', variable);
     setSelectedVariable(variable);
   }
 
@@ -111,7 +115,7 @@ function App() {
                                 && device.deviceId === theDevice.deviceId )
                                   ? theDevice 
                                   : device));
-                                  console.log('Devices: ', scannedDevices);
+                                  //console.log('Devices: ', scannedDevices);
   }
 
   const selectDevice = (theDevice) => {
@@ -122,7 +126,7 @@ function App() {
       else
         setSelectedDevice({});      
 
-      console.log('The Selected Device: ', selected);
+      //console.log('The Selected Device: ', selected);
   }
 
   const addSubscription = (subscription) => {
@@ -132,8 +136,8 @@ function App() {
   const removeSubscription = (subscription) => {
     // newSubscrptions = subscriptions;
     // var newSubscrptions = subscriptions.filter(x => (x.type != subscription.type && x.instance != subscription.instance && x.device != subscription.device));
-      // console.log(activeSubscriptions);
-      console.log('Remove Subscription: ', subscription);
+      // //console.log(activeSubscriptions);
+      //console.log('Remove Subscription: ', subscription);
       setActiveSubscriptions(activeSubscriptions.filter(x => 
         x.device != subscription.device ||
         x.type != subscription.type ||
@@ -145,7 +149,7 @@ function App() {
 
   const updateSubscription = (theSubscription) => {
 
-    console.log('UPDATING: ', subscriptions);
+    //console.log('UPDATING: ', subscriptions);
     var exists = subscriptions.filter(x => x.device == theSubscription.device && x.type == theSubscription.type && x.instance == theSubscription.instance);
 
     if(exists.length == 0) {
@@ -162,7 +166,7 @@ function App() {
 
       if(!addingSubscription) {
 
-        console.log('Subscriptions in updateSubscription:', subscriptions);
+        //console.log('Subscriptions in updateSubscription:', subscriptions);
         var newSubscrptions = subscriptions;
 
         if(exists[0].values == undefined) {
@@ -188,16 +192,16 @@ function App() {
 
 
         // newSubscrptions.forEach((subscription) => {
-        //   // console.log('Subscription for: ', subscription);
+        //   // //console.log('Subscription for: ', subscription);
         //   if((subscription.device == theSubscription.device && subscription.type == theSubscription.type && subscription.instance == theSubscription.instance && (subscription.values[subscription.values.length - 1] != theSubscription.value.value))) {
         //     subscription.values.push(theSubscription.value)
-        //     // console.log('IN THE IF')
+        //     // //console.log('IN THE IF')
         //   }
         // })
       }
     }
 
-    // console.log('NewSUBSCRIPTIONS: ', newSubscrptions);
+    // //console.log('NewSUBSCRIPTIONS: ', newSubscrptions);
 
     // setSubscriptions(newSubscrptions);
     // setSubscriptions(newSubscrptions.map((subscription) => {
@@ -207,7 +211,7 @@ function App() {
     // }));
 
 
-    // console.log('Subscriptions', subscriptions);
+    // //console.log('Subscriptions', subscriptions);
   }
 
   return (
@@ -238,7 +242,7 @@ function App() {
           </Grid>
           <Grid item xs={5}>
             {/* COV Subscription table */}
-            <TheCard heading='COV Subscriptions / Alarms / Periodic Polling' item={<COVTable subscriptions={subscriptions} activeSubscriptions={activeSubscriptions} setSubscriptionToPlot={setSubscriptionToPlot}/>}/>
+            <TheCard heading='COV Subscriptions' item={<COVTable subscriptions={subscriptions} activeSubscriptions={activeSubscriptions} setSubscriptionToPlot={setSubscriptionToPlot}/>}/>
           </Grid>
           <Grid item xs={4}>
             {/* Explorer table */}
@@ -264,11 +268,15 @@ function App() {
             <br/>
             {/* <SimpleBottomNavigation/> */}
             <Footer children={
-                <>
+                <div style={{ display: 'flex', justifyContent: 'end' }}>
                   <SubscribeCOV variable={selectedVariable} device={selectedDevice} updateDevice={updateDevice} addSubscription={addSubscription} removeSubscription={removeSubscription}/>
-                  <Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart}/>
-                </>
+                  <div style={{ width: '3%' }}>
+
+                  </div>
+                  <Scan addDevice={scanDevices} selectDevice={selectDevice} scanStart={scanStart} setActiveInterface={setActiveInterface}/>
+                </div>
               }
+              activeInterface={activeInterface}
             />
           </Grid>
           

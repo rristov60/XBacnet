@@ -7,6 +7,7 @@ import ErrorAlert from './ErrorAlert';
 import InfoAlert from './InfoAlert';
 import { Button } from '@mui/material';
 import AlertDialog from './AlertDialog';
+import Toast from './Toast';
 const bacnetProperties = require('../Helpers/BacnetProperties.json')
 // const { ipcRenderer } = window.require('electron');
 
@@ -16,6 +17,11 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     const [open, setOpen] = React.useState(false);
     const [selectedProperty, setSelectedProperty] = React.useState({});
     const [valueToWrite, setValueToWrite] = React.useState('UNIQUEERRSTRINGNOTTOWRITE');
+    const [objectToWrite, setObjectToWrite] = React.useState({});
+
+    const [toastOpen, setToastOpen] = React.useState(false);
+    const [toastMessage, setToastMessage] = React.useState('');
+    const [toastType, setToastType] = React.useState('success');
 
     const handleClickOpen = (property) => {
       setSelectedProperty(property);
@@ -23,16 +29,22 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     };
 
     const handleCancel = () => {
+      //console.log("value to write:", valueToWrite);
+      setValueToWrite('UNIQUEERRSTRINGNOTTOWRITE');
+      setSelectedProperty({});
+      setObjectToWrite({});
       setOpen(false);
     }
 
     const handleSave = () => {
 
-      // console.log('Value to write: ', valueToWrite);
-      console.log('Variable: ', variable);
-      // console.log('The property:', selectedProperty);
-
-        const writeObject = {
+      // //console.log('Value to write: ', valueToWrite);
+      //console.log('Variable: ', valueToWrite);
+      //console.log(selectedProperty);
+      // //console.log('The property:', selectedProperty);
+      var writeObject = null;
+      if(!valueToWrite.isObject) {
+        writeObject = {
           typeInstance: {
             type: variable.value.type,
             instance: variable.value.instance
@@ -43,8 +55,23 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             value: valueToWrite.value
           }]
         };
+        //console.log('WriteOBJECT: ', writeObject);
+      } else {
+        delete valueToWrite.isObject;
+        writeObject = {
+          typeInstance: {
+            type: variable.value.type,
+            instance: variable.value.instance
+          },
+          propertyId: bacnetProperties[selectedProperty.id],
+          theValue: [{
+            type: variable[selectedProperty.id].type,
+            value: valueToWrite
+          }]
+        };
+      }
 
-        console.table(writeObject);
+        //console.table(writeObject);
 
       if(valueToWrite != 'UNIQUEERRSTRINGNOTTOWRITE') {
         // write to the device
@@ -58,14 +85,22 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         //     }
         //  };
 
-        window.testAPI.writeToObject(device, writeObject, (response) => {
+        window.bacnet.writeToObject(device, writeObject, (response) => {
           // Debugging the response
-            console.log(response);
+            //console.log(response);
 
             if(response.error == null) {
               variable[selectedProperty.id].value = valueToWrite.value;
-              // console.log(variable[selectedProperty.id].value);
+              // //console.log(variable[selectedProperty.id].value);
               // update the variable
+              setToastMessage(`Successfully written ${writeObject.theValue[0].value} to ${variable.OBJECT_NAME.value}!`);
+              setToastType('success');
+              setToastOpen(true);
+              setTimeout(() => {
+                setToastOpen(false);
+              }, 1000);
+            } else {
+
             }
   
             // response.values[0].values.map((value) => {
@@ -96,7 +131,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     };
 
     const handleRowEditCommit = (params) => {
-      console.log(params);
+      //console.log(params);
     }
 
   const handleRowEdit = (params) => {
@@ -125,7 +160,8 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
           rows.push({
             id: `${key}`,
             BACnetProperty: `${formattedKey}`,
-            value: variable[key].value
+            value: (typeof variable[key].value === 'object' && variable[key].value !== null && key != 'MODIFICATION_DATE') ? '{ Object }' : variable[key].value,
+            object: variable[key].value
           });
 
         }
@@ -165,7 +201,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         // Show error alert
         // <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         //   <div style={{ width: '90%'}}>
-            // <Button onClick={    console.log('Variable in Explorer Table', variable)}>Check</Button>
+            // <Button onClick={    //console.log('Variable in Explorer Table', variable)}>Check</Button>
             <InfoAlert text='Nothing to display !'/>
         //   </div>
         // </div>
@@ -173,21 +209,22 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         :
         // Show the actual table
         <>
-          <AlertDialog open={open} handleSave={handleSave} handleCancel={handleCancel} property={selectedProperty} setValueToWrite={setValueToWrite}/>
+          <AlertDialog open={open} handleSave={handleSave} handleCancel={handleCancel} property={selectedProperty} setValueToWrite={setValueToWrite} setObjectToWrite={setObjectToWrite} objectToWrite={objectToWrite}/>
           <DataGrid
             rows={rows(variable)}
             showColumnRightBorder={true}
             columns={columns}
             sx={{color: 'white', textAlign: 'center', border: 'unset', width: '100%', overflow: 'scroll'}}
-            // onCellEditStop={() => {console.log('Stopped Editing the Celld')}}
+            // onCellEditStop={() => {//console.log('Stopped Editing the Celld')}}
             // onCellEditStop={handleRowEditCommit}
             // disableSelectionOnClick
             onCellEditStart={(params, event) => {
-              console.log(params);
+              //console.log(params);
               var property = {
                 name: params.row.BACnetProperty,
                 value: params.row.value,
-                id: params.row.id
+                id: params.row.id,
+                object: params.row.object
               }
               handleClickOpen(property);
             }}
@@ -195,19 +232,20 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             onCellEditCommit={(params, event) => {
                 
                 if(params.id.includes('name')) {
-                  console.log('EDIT');
+                  //console.log('EDIT');
                 } else {
-                  console.log('Return Old value');
+                  //console.log('Return Old value');
                   event.defaultMuiPrevented = true; // Preventing the edit on the cell
-                  console.log(params);
-                  console.log(variable);
+                  //console.log(params);
+                  //console.log(variable);
                 }
             }}
-            // onCellFocusOut={(params) => {console.log(params)}}
+            // onCellFocusOut={(params) => {//console.log(params)}}
             hideFooter={true}
             sortModel={undefined}
             // experimentalFeatures={{ newEditingApi: true }}
           />
+          <Toast open={toastOpen} message={toastMessage} type={toastType}/>
         </>
       }
     </div>
@@ -217,42 +255,4 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
 const columns = [
   { field: 'BACnetProperty', headerName: 'BACnet Property', width: 190, editable: false, headerAlign: 'center', disableColumnMenu: true, sortable: false },
   { field: 'value', headerName: 'Value', width: 190, editable: true, headerAlign: 'center', disableColumnMenu: true, sortable: false }
-];
-
-const rows = [
-  {
-    id: 'varId|PropertyId',
-    BACnetProperty: randomTraderName(),
-    value: 25,
-  },
-  {
-    id: 2,
-    BACnetProperty: randomTraderName(),
-    value: 36,
-  },
-  {
-    id: 3,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 4,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 5,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 6,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  },
-  {
-    id: 7,
-    BACnetProperty: randomTraderName(),
-    value: 19,
-  }
 ];

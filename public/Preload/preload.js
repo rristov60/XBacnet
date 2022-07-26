@@ -2,7 +2,7 @@
 const { ipcRenderer, contextBridge } = require('electron');
 
 // Example fucnction
-const whoIs = (callback) => {
+const whoIs = (interface, callback) => {
     // MessageChannels are lightweight--it's cheap to create a new one for each
     // request.
     const { port1, port2 } = new MessageChannel();
@@ -16,7 +16,7 @@ const whoIs = (callback) => {
 
     ipcRenderer.postMessage(
         'whoIs',
-        {},
+        { interface: interface },
         [port2]
     );
 
@@ -29,7 +29,7 @@ const whoIs = (callback) => {
 
     // Maybe finish or smth like that message (we'll see later)
     // port1.onclose = () => {
-    //     console.log('stream ended');
+    //     //console.log('stream ended');
     // }
 }
 
@@ -156,7 +156,7 @@ const COVNotification = (callback) => {
 
 
 // From the previous comment this is the correct way to use context bridge
-contextBridge.exposeInMainWorld('testAPI', {
+contextBridge.exposeInMainWorld('bacnet', {
     whoIs:  whoIs,
     readAllObjects: readAllObjects,
     readObject: readObject,

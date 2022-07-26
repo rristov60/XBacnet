@@ -1,3 +1,4 @@
-node_modules # Ingore the modules
-out # Output from electron build
-dist # Built binaries
+node_modules
+dist
+build
+.DS_Store

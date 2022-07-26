@@ -1,14 +1,55 @@
 {
-  "name": "cropbe",
+  "name": "xbacnet",
+  "productName": "XBacnet",
   "version": "1.0.0",
   "description": "Cross Platform BACnet Explorer",
   "main": "public/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "react:start": "PORT=1234 BROWSER=none react-scripts start",
+    "build": "react-scripts build",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
     "electron:start": "APP_DEV=true electron .",
-    "electron:build": ""
+    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/main.js -mwl"
+  },
+  "build": {
+    "extends": null,
+    "appId": "com.xbacnet.app",
+    "mac": {
+      "target": [ 
+        {
+          "target":"dmg",
+          "arch":"arm64"
+        },
+        {
+          "target":"dmg",
+          "arch":"x64"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "deb"
+        }
+      ]
+    },
+    "files": [
+      "dist/**/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "repository": {
     "type": "git",
@@ -22,7 +63,7 @@
     "Open",
     "Source"
   ],
-  "author": "Riste Ristov",
+  "author": "Riste Ristov <risteristov60@yahoo.com> (https://riste.mk)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/rristov60/CROPBE/issues"
@@ -31,15 +72,18 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.2",
     "electron": "^19.0.7",
-    "tailwindcss": "^3.1.4"
+    "tailwindcss": "^3.1.4",
+    "electron-builder": "^23.1.0"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "@material-ui/core": "^4.12.4",
     "@mui/icons-material": "^5.8.4",
     "@mui/lab": "^5.0.0-alpha.89",
     "@mui/material": "^5.8.7",
+    "@mui/styles": "^5.9.1",
     "@mui/x-data-grid": "^5.13.0",
     "@mui/x-data-grid-generator": "^5.13.0",
     "@react-spring/web": "^9.4.5",

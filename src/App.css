@@ -4,6 +4,10 @@
   overflow: hidden;
 }
 
+img:hover {
+  cursor: pointer;
+}
+
 body {
   /* -webkit-app-region: drag; */
   background-color: #0A122A;

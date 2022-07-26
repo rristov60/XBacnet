@@ -8,7 +8,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Scan from './Scan';
 
 const scanDevices = () => {
-  console.log('scan');
+  //console.log('scan');
 }
 
 export default function SimpleBottomNavigation() {
