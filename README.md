@@ -1,6 +1,8 @@
 # XBacnet
 The first ever cross-platform Bacnet explorer, for hobbyists and professionals alike.
 
+![XBacnet](screenshot.png)
+
 ## Running locally
 If you want to run this application locally, few steps need to be taken.
 
@@ -21,5 +23,3 @@ By default this will run react on **http://localhost:1234** and the electron app
 
 
 Website: [XBacnet](https://xbacnet.com)
-
-![XBacnet](screenshot.png)
