@@ -21,3 +21,5 @@ By default this will run react on **http://localhost:1234** and the electron app
 
 
 Website: [XBacnet](https://xbacnet.com)
+
+![XBacnet](screenshot.png)
