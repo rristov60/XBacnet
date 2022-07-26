@@ -10,7 +10,10 @@
     "build": "react-scripts build",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none yarn start\" \"yarn electron:start\"",
     "electron:start": "APP_DEV=true electron .",
-    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/main.js -mwl"
+    "electron:build": "yarn build && electron-builder -c.extraMetadata.main=build/main.js -mwl",
+    "electron:build-mac": "yarn build && electron-builder -c.extraMetadata.main=build/main.js -m",
+    "electron:build-linux": "yarn build && electron-builder -c.extraMetadata.main=build/main.js -l",
+    "electron:build-windows": "yarn build && electron-builder -c.extraMetadata.main=build/main.js -w"
   },
   "build": {
     "extends": null,
