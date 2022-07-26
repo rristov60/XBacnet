@@ -50,7 +50,7 @@ const Scan = ({ addDevice, selectDevice, scanStart, setActiveInterface }) => {
                       }
                   })
               });
-              console.log('Interfaces:', interfaces)
+              //console.log('Interfaces:', interfaces)
             //   setTimeout(() => {
                 setOpen(true);
             //   }, 2000);
@@ -58,53 +58,6 @@ const Scan = ({ addDevice, selectDevice, scanStart, setActiveInterface }) => {
             })
     }
     
-    // const addDevices = () => {
-    //     // Start loading
-    //     selectDevice({});
-    //     scanStart();
-    //     setLoading(true);
-    //     window.testAPI.whoIs((response) => {
-
-
-    //         // TODO:
-    //         // Fetch devices name and represent them that way (*but keep the IP as tooltip)
-    //         console.log(response);
-
-    //         let devices = []; // Array that stores the devices
-
-    //         var i = 2;
-    //         response.forEach((item) => {
-
-    //             // New object for each device in the response
-    //             let device = {};
-
-    //             // console.log(item);
-                
-    //             // Formatting so it is more readable
-    //             device.address = item.header.sender.address;
-    //             device.forwarded = item.header.sender.forwardedFrom;
-    //             device.deviceId = item.payload.deviceId;
-    //             device.maxApdu = item.payload.maxApdu;
-    //             device.segmentation = item.payload.segmentation;
-    //             device.vendorId = item.payload.vendorId;
-    //             device.apduType = item.header.apduType;
-    //             device.confirmedService = item.header.confirmedService;
-    //             device.expectingReply = item.header.expectingReply;
-    //             device.func = item.header.func;
-    //             device.nodeId = i;
-
-    //             devices.push(device); // Adding the new device to the array
-
-    //             i++;
-
-    //         })
-            
-    //         addDevice(devices); // Propagating the changes
-
-    //         // End Loading
-    //         setLoading(false);
-    //     });
-    // }
 
   return (
     <>

@@ -6,6 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import packageJson from '../../package.json';
 
 const InfoDialog = ({ open, closeDialog }) => {
 
@@ -33,10 +34,13 @@ const InfoDialog = ({ open, closeDialog }) => {
         <DialogTitle sx={{ color: 'white' }}>{<span>App info</span>}</DialogTitle>
         <DialogContent sx={{ color: 'white' }}>
           <DialogContentText sx={{ color: 'white' }}>
-            {<span>change the field and click on SAVE. To discard the changes and keep the current value click CANCEL.</span>}
+            {<span>XBacnet</span>}
           </DialogContentText>
-          <br></br>
-          <br></br>
+          <DialogContentText sx={{ color: 'white' }}>
+            {<span>Version {packageJson.version}</span>}
+          </DialogContentText>
+          {/* <br></br>
+          <br></br> */}
           {/* <FormControl fullWidth>
             <InputLabel id="interface-select-label">Interface</InputLabel>
             <Select
@@ -95,8 +99,8 @@ const InfoDialog = ({ open, closeDialog }) => {
             }}
           /> */}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog} variant='outlined' style={{ borderColor: 'red', color: 'red' }}>Close</Button>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button onClick={closeDialog} variant='text' style={{ borderColor: 'red', color: 'red' }}>X</Button>
         </DialogActions>
       </Dialog>
     </div>

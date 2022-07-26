@@ -29,7 +29,7 @@ const whoIs = (interface, callback) => {
 
     // Maybe finish or smth like that message (we'll see later)
     // port1.onclose = () => {
-    //     console.log('stream ended');
+    //     //console.log('stream ended');
     // }
 }
 
@@ -156,7 +156,7 @@ const COVNotification = (callback) => {
 
 
 // From the previous comment this is the correct way to use context bridge
-contextBridge.exposeInMainWorld('testAPI', {
+contextBridge.exposeInMainWorld('bacnet', {
     whoIs:  whoIs,
     readAllObjects: readAllObjects,
     readObject: readObject,

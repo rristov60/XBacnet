@@ -29,7 +29,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     };
 
     const handleCancel = () => {
-      console.log("value to write:", valueToWrite);
+      //console.log("value to write:", valueToWrite);
       setValueToWrite('UNIQUEERRSTRINGNOTTOWRITE');
       setSelectedProperty({});
       setObjectToWrite({});
@@ -38,9 +38,10 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
 
     const handleSave = () => {
 
-      // console.log('Value to write: ', valueToWrite);
-      console.log('Variable: ', variable);
-      // console.log('The property:', selectedProperty);
+      // //console.log('Value to write: ', valueToWrite);
+      //console.log('Variable: ', valueToWrite);
+      //console.log(selectedProperty);
+      // //console.log('The property:', selectedProperty);
       var writeObject = null;
       if(!valueToWrite.isObject) {
         writeObject = {
@@ -54,6 +55,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             value: valueToWrite.value
           }]
         };
+        //console.log('WriteOBJECT: ', writeObject);
       } else {
         delete valueToWrite.isObject;
         writeObject = {
@@ -69,7 +71,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         };
       }
 
-        console.table(writeObject);
+        //console.table(writeObject);
 
       if(valueToWrite != 'UNIQUEERRSTRINGNOTTOWRITE') {
         // write to the device
@@ -83,13 +85,13 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         //     }
         //  };
 
-        window.testAPI.writeToObject(device, writeObject, (response) => {
+        window.bacnet.writeToObject(device, writeObject, (response) => {
           // Debugging the response
-            console.log(response);
+            //console.log(response);
 
             if(response.error == null) {
               variable[selectedProperty.id].value = valueToWrite.value;
-              // console.log(variable[selectedProperty.id].value);
+              // //console.log(variable[selectedProperty.id].value);
               // update the variable
               setToastMessage(`Successfully written ${writeObject.theValue[0].value} to ${variable.OBJECT_NAME.value}!`);
               setToastType('success');
@@ -129,7 +131,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     };
 
     const handleRowEditCommit = (params) => {
-      console.log(params);
+      //console.log(params);
     }
 
   const handleRowEdit = (params) => {
@@ -199,7 +201,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
         // Show error alert
         // <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         //   <div style={{ width: '90%'}}>
-            // <Button onClick={    console.log('Variable in Explorer Table', variable)}>Check</Button>
+            // <Button onClick={    //console.log('Variable in Explorer Table', variable)}>Check</Button>
             <InfoAlert text='Nothing to display !'/>
         //   </div>
         // </div>
@@ -213,11 +215,11 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             showColumnRightBorder={true}
             columns={columns}
             sx={{color: 'white', textAlign: 'center', border: 'unset', width: '100%', overflow: 'scroll'}}
-            // onCellEditStop={() => {console.log('Stopped Editing the Celld')}}
+            // onCellEditStop={() => {//console.log('Stopped Editing the Celld')}}
             // onCellEditStop={handleRowEditCommit}
             // disableSelectionOnClick
             onCellEditStart={(params, event) => {
-              console.log(params);
+              //console.log(params);
               var property = {
                 name: params.row.BACnetProperty,
                 value: params.row.value,
@@ -230,15 +232,15 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             onCellEditCommit={(params, event) => {
                 
                 if(params.id.includes('name')) {
-                  console.log('EDIT');
+                  //console.log('EDIT');
                 } else {
-                  console.log('Return Old value');
+                  //console.log('Return Old value');
                   event.defaultMuiPrevented = true; // Preventing the edit on the cell
-                  console.log(params);
-                  console.log(variable);
+                  //console.log(params);
+                  //console.log(variable);
                 }
             }}
-            // onCellFocusOut={(params) => {console.log(params)}}
+            // onCellFocusOut={(params) => {//console.log(params)}}
             hideFooter={true}
             sortModel={undefined}
             // experimentalFeatures={{ newEditingApi: true }}

@@ -20,10 +20,11 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
   // };
 
   // const [objectToWrite, setObjectToWrite] = React.useState({});
+  //console.log(property);
 
   const objectTextFields =  (property.value == '{ Object }') ? Object.keys(property.object).map((key) => {
     // Object.entries(object).forEach(([key, value]) => {
-      // console.log(key);
+      // //console.log(key);
       return <TextField
           autoFocus
           margin="dense"
@@ -35,9 +36,9 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
             newObject['isObject'] = true;
             newObject[key] = event.target.value;
             setObjectToWrite(newObject);
-            // console.log(event.target.value);
+            // //console.log(event.target.value);
             // property.object[key] = event.target.value;
-            console.table(objectToWrite);
+            //console.table(objectToWrite);
             setValueToWrite(objectToWrite);
           }}
           type="text"
@@ -79,7 +80,7 @@ export default function AlertDialog({ open, handleSave, property, setValueToWrit
     // })
   }) : '';
 
-  // console.log(property);
+  // //console.log(property);
   return (
     <div>
       {

@@ -36,11 +36,15 @@ function CloseSquare(props) {
     <SvgIcon
       className="close"
       fontSize="0.8rem"
-      style={{ width: 14, height: 14 }}
+      style={{ width: 20, height: 20,  }}
       {...props}
     >
       {/* tslint:disable-next-line: max-line-length */}
-      <path d="M17.485 17.512q-.281.281-.682.281t-.696-.268l-4.12-4.147-4.12 4.147q-.294.268-.696.268t-.682-.281-.281-.682.294-.669l4.12-4.147-4.12-4.147q-.294-.268-.294-.669t.281-.682.682-.281.696 .268l4.12 4.147 4.12-4.147q.294-.268.696-.268t.682.281 .281.669-.294.682l-4.12 4.147 4.12 4.147q.294.268 .294.669t-.281.682zM22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0z" />
+      {/* <path d="M17.485 17.512q-.281.281-.682.281t-.696-.268l-4.12-4.147-4.12 4.147q-.294.268-.696.268t-.682-.281-.281-.682.294-.669l4.12-4.147-4.12-4.147q-.294-.268-.294-.669t.281-.682.682-.281.696 .268l4.12 4.147 4.12-4.147q.294-.268.696-.268t.682.281 .281.669-.294.682l-4.12 4.147 4.12 4.147q.294.268 .294.669t-.281.682zM22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0z" /> */}
+    {/* <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M4.871 4A17.926 17.926 0 003 12c0 2.874.673 5.59 1.871 8m14.13 0a17.926 17.926 0 001.87-8c0-2.874-.673-5.59-1.87-8M9 9h1.246a1 1 0 01.961.725l1.586 5.55a1 1 0 00.961.725H15m1-7h-.08a2 2 0 00-1.519.698L9.6 15.302A2 2 0 018.08 16H8" />
+    </svg> */}
+    <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 5h2V4H1.5l-.5.5v8l.5.5H4v-1H2V5zm12.5-1H12v1h2v7h-2v1h2.5l.5-.5v-8l-.5-.5zm-2.74 2.57L12 7v2.51l-.3.45-4.5 2h-.46l-2.5-1.5-.24-.43v-2.5l.3-.46 4.5-2h.46l2.5 1.5zM5 9.71l1.5.9V9.28L5 8.38v1.33zm.58-2.15l1.45.87 3.39-1.5-1.45-.87-3.39 1.5zm1.95 3.17l3.5-1.56v-1.4l-3.5 1.55v1.41z"/></svg>
     </SvgIcon>
   );
 }
@@ -97,13 +101,14 @@ const divideIpPort = (string, part) => {
 }
 
 const TreeVariables = ({ device, updateDevice, selectVariable }) => {
+  //console.log('Tree variables device: ', device);
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState('');
   const [toastType, setToastType] = React.useState('success');
 
   const updateSelectedVar = (device, variable) => {
     if(variable.OBJECT_NAME == undefined) {
-
+      //console.log('TheVariable: ', variable);
       // Read the stuff
       const requestArray = [
         {
@@ -126,9 +131,9 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
         }
       ];
 
-      window.testAPI.readMultiple(device, requestArray, (response) => {
+      window.bacnet.readMultiple(device, requestArray, (response) => {
         // Debugging the response
-          // console.log(response);
+          // //console.log(response);
 
           // response.values[0].values.map((value) => {
           //   if(value.id == 77) {
@@ -195,7 +200,7 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
             sx={{ maxHeight: '90%', flexGrow: 1, maxWidth: '98%', overflowX: 'hidden', overflowY: 'auto'  }}
             style={{ textAlign: 'left' }}
           >
-            <StyledTreeItem nodeId="1" onClick={() => {{selectVariable({})}}} label={<span style={{ fontSize: '0.9rem' }}>{`${device.name} \n [ IP: ${device.address}, #${device.deviceId} ]`}</span>}>
+            <StyledTreeItem nodeId="1" onClick={() => {{updateSelectedVar(device, device.info)}}} label={<span style={{ fontSize: '0.9rem' }}>{`${device.info.OBJECT_NAME.value} \n [ IP: ${device.address}, #${device.deviceId} ]`}</span>}>
               {/* TODO: Format this to be more represntative (perpaps read the device name :))  */}
               { device.variables.map((variable) => { return <StyledTreeItem 
                                                     onClick={() => {updateSelectedVar(device, variable); {/* HANDLE THE READING OF THE NAME HERE AND DISPLAYING THE VARS */}}}

@@ -13,7 +13,7 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
     const subscribeCOV = () => {
 
         // client.subscribeCov('192.168.0.104', { type: 4, instance: 101 },85, false, false, 0, (err) => {
-        //     console.log('SubscribeCOV: ' + err);
+        //     //console.log('SubscribeCOV: ' + err);
         // });
         const subscribeObject = {
             typeInstance: {
@@ -23,12 +23,12 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
             popertyId: 85
         };
 
-        window.testAPI.subscribeCOV(device, subscribeObject, (response) => {
-            // console.log('COV Response: ', response);
+        window.bacnet.subscribeCOV(device, subscribeObject, (response) => {
+            // //console.log('COV Response: ', response);
 
             if(response == undefined) {
 
-                // console.log("TheDevice: ", device);
+                // //console.log("TheDevice: ", device);
                 variable.cov.subscribed = true;
 
                 var subscribedVariable = {
@@ -65,7 +65,7 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
             }
         });
 
-        // console.log("TheDevice: ", device);
+        // //console.log("TheDevice: ", device);
         // variable.cov.subscribed = true;
         // updateDevice(device);
     }
@@ -80,9 +80,9 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
             popertyId: 85
         };
 
-        window.testAPI.unsubscribeCOV(device, unsubscribeObject, (response) => {;
+        window.bacnet.unsubscribeCOV(device, unsubscribeObject, (response) => {;
             if(response == undefined) {
-                console.log('Response Unsusbcribe: ', response);
+                //console.log('Response Unsusbcribe: ', response);
                 variable.cov.subscribed = false;
                 
                 var unsubscribeVar = {

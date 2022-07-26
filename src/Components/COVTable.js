@@ -55,7 +55,7 @@ function Row({ row, setSubscriptionToPlot }) {
             onClick={() => {
               setOpen(!open);
               setSubscriptionToPlot(row);
-              console.log('Row', row);
+              //console.log('Row', row);
             }}
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -147,10 +147,10 @@ const convertTimeStampToReadable = (timestamp) => {
 // Table for COV Subscriptions / Alarams / Period Polling
 const COVTable = ({ subscriptions, activeSubscriptions, setSubscriptionToPlot }) => {
 
-  console.log(activeSubscriptions);
+  //console.log(activeSubscriptions);
   var rows=[];
-  console.log('COV Table: ', subscriptions);
-  // console.log('COV TABLE SUBSCRIPTIONS LENGTH: ', subscriptions.length);
+  //console.log('COV Table: ', subscriptions);
+  // //console.log('COV TABLE SUBSCRIPTIONS LENGTH: ', subscriptions.length);
   const createRows = () => {
     activeSubscriptions.forEach((subscription) => {
       var currentSubscription = subscriptions.filter(x => x.device == subscription.device && x.type == subscription.type && x.instance == subscription.instance);

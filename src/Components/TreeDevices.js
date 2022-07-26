@@ -11,6 +11,7 @@ import { Tooltip } from 'recharts';
 import Toast from './Toast';
 
 const bacnetTypes = require('../Helpers/BacnetTypes.json');
+const bacnetProperties = require('../Helpers/BacnetProperties.json');
 
 function MinusSquare(props) {
   return (
@@ -35,11 +36,14 @@ function CloseSquare(props) {
     <SvgIcon
       className="close"
       fontSize="0.8rem"
-      style={{ width: 14, height: 14 }}
+      style={{ width: 16, height: 16 }}
       {...props}
     >
       {/* tslint:disable-next-line: max-line-length */}
-      <path d="M17.485 17.512q-.281.281-.682.281t-.696-.268l-4.12-4.147-4.12 4.147q-.294.268-.696.268t-.682-.281-.281-.682.294-.669l4.12-4.147-4.12-4.147q-.294-.268-.294-.669t.281-.682.682-.281.696 .268l4.12 4.147 4.12-4.147q.294-.268.696-.268t.682.281 .281.669-.294.682l-4.12 4.147 4.12 4.147q.294.268 .294.669t-.281.682zM22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0z" />
+      {/* <path d="M17.485 17.512q-.281.281-.682.281t-.696-.268l-4.12-4.147-4.12 4.147q-.294.268-.696.268t-.682-.281-.281-.682.294-.669l4.12-4.147-4.12-4.147q-.294-.268-.294-.669t.281-.682.682-.281.696 .268l4.12 4.147 4.12-4.147q.294-.268.696-.268t.682.281 .281.669-.294.682l-4.12 4.147 4.12 4.147q.294.268 .294.669t-.281.682zM22.047 22.074v0 0-20.147 0h-20.12v0 20.147 0h20.12zM22.047 24h-20.12q-.803 0-1.365-.562t-.562-1.365v-20.147q0-.776.562-1.351t1.365-.575h20.147q.776 0 1.351.575t.575 1.351v20.147q0 .803-.575 1.365t-1.378.562v0z" /> */}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path strokeLinecap="round" stroke-linejoin="round" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+      </svg>
     </SvgIcon>
   );
 }
@@ -105,9 +109,10 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
 
   const updateDevice = (device) => {
 
-    console.log(device);
+    // //console.log(device);
 
     if(device.variables == undefined) {
+      device.info={};
 
       // Read Name, Location and all of the variables of the device
       const intialReadRequestArray = [
@@ -121,15 +126,15 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
             {  // Read all objects of the device
               id: 76
             }, 
-            {  // Read the name of the device(object)
-              id: 77
-            }, 
-            { // Read the description of the device
-              id: 28
-            },
-            { // Read device location
-              id: 58
-            },
+            // {  // Read the name of the device(object)
+            //   id: 77
+            // }, 
+            // { // Read the description of the device
+            //   id: 28
+            // },
+            // { // Read device location
+            //   id: 58
+            // },
             {
               id: 8
             }
@@ -139,9 +144,9 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
 
 
       let i = 2;
-      window.testAPI.readMultiple(device, intialReadRequestArray, (response) => {
+      window.bacnet.readMultiple(device, intialReadRequestArray, (response) => {
         // Debugging the response
-        // console.log('Response for treeDevice: ', response);
+        //console.log('Response for treeDevice: ', response);
         if(!response.error) {
             response.value.values[0].values.map((value) => {
 
@@ -156,7 +161,7 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
                     Object.keys(bacnetTypes).map((key) => { // Getting the name of the variable type
                       if(bacnetTypes[key] == variable.value.type) {
                         variable.typeName = key;
-                        console.log(variable.typeName);
+                        //console.log(variable.typeName);
                       }
                     })
                     i++; // Incrementing the node id
@@ -164,12 +169,39 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
                   }
                 })
                 // If the current value is for device name
-              } else if (value.id == 77) {
-                device.name = value.value[0].value;  // Assigning the device name from the read
-                // If the read is for device locaiton
-              } else if (value.id == 58){
-                device.location = value.value[0].value; // Assigning the device location
+              } else {
+                // //console.log(value);
+                // value.value[0].forEach((value) => {
+                  if(value.value.length > 0) {
+                    //console.log('IN THE INFO !');
+                    Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
+                      if(bacnetProperties[key] == value.id) {
+                        device.info[key] = { value: value.value[0].value, type: value.value[0].type };
+                        // variable[key].type = value.value[0].type;
+                      }
+                    })
+                    device.info.value = {
+                      type: 8,
+                      instance: device.deviceId
+                    };
+                  }
+                // })
+                // device.info = null;
+                // var variable = value.value[0];
+                //   Object.keys(bacnetTypes).map((key) => { // Getting the name of the variable type
+                //     if(bacnetTypes[key] == variable.value.type) {
+                //       variable.typeName = key;
+                //       //console.log(variable.typeName);
+                //     }
+                //   device.info = variable;
+                // })
               }
+              // else if (value.id == 77) {
+              //   device.name = value.value[0].value;  // Assigning the device name from the read
+              //   // If the read is for device locaiton
+              // } else if (value.id == 58){
+              //   device.location = value.value[0].value; // Assigning the device location
+              // }
             })
             setToastMessage(`Successfully read all variables for #${device.deviceId}!`);
             setToastType('success');
@@ -199,6 +231,7 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
     // Check if all variables are present for the device, don't pull all of the variables
     // Check if there are subscriptions update them accordingly. Also be sure to keep
     // track of the subscriptions in the background
+    //console.log(device);
   }
 
   return (
@@ -222,7 +255,7 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
                                                       key={`${device.address}|${device.deviceId}`} 
                                                       nodeId={`${device.nodeId}`} 
                                                       label={<span style={{ fontSize: '0.8rem' }}>
-                                                        {`[ #${device.deviceId} ] ${(device.name == undefined) ? device.address : `${device.name} (${device.location})`}`}</span>}
+                                                        {`[ #${device.deviceId} ] ${(device.info?.OBJECT_NAME?.value == undefined) ? device.address : `${device.info.OBJECT_NAME.value} (${device.info.LOCATION.value})`}`}</span>}
                                                         />})}
               </StyledTreeItem>
             </TreeView>

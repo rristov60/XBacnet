@@ -1,5 +1,5 @@
 const getInterfaces = () => {
-    console.log('Clicked theInterfaces!');
+    //console.log('Clicked theInterfaces!');
 
     window.network.showInterfaces((response) => {
 
@@ -27,8 +27,8 @@ const getInterfaces = () => {
             })
         });
 
-        console.log('theInterfaces:', theInterfaces)
-        // Instead of console.log 
+        //console.log('theInterfaces:', theInterfaces)
+        // Instead of //console.log 
         // dispay these in the correct dialog
         // return event.data;
     })

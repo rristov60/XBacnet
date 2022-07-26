@@ -21,18 +21,18 @@ const Charts = ({ subscriptionToPlot, subscriptions, activeSubscriptions }) => {
     // }
     // 
     // Instance
-    console.log('SubscriptionToPlot:', subscriptionToPlot)
-    console.log('Chart.js subscriptions: ', subscriptions);
+    //console.log('SubscriptionToPlot:', subscriptionToPlot)
+    //console.log('Chart.js subscriptions: ', subscriptions);
     var rows = [];
     var data = [];
     var valueI = 0;
     const createRows = () => {
       const theSubscription = activeSubscriptions.filter(x => x.device == subscriptionToPlot.device && x.type == subscriptionToPlot.objectType && x.instance == subscriptionToPlot.instance);
-      console.table(theSubscription);
+      //console.table(theSubscription);
 
       if(theSubscription.length != 0) {
         var currentSubscription = subscriptions.filter(x => x.device == theSubscription[0].device && x.type == theSubscription[0].type && x.instance == theSubscription[0].instance);
-        console.table(currentSubscription);
+        //console.table(currentSubscription);
         if(currentSubscription.length != 0 && currentSubscription[0].values != undefined) {
             currentSubscription[0].values.forEach((value) => {
               var objToPush = {};
@@ -132,7 +132,6 @@ const Charts = ({ subscriptionToPlot, subscriptions, activeSubscriptions }) => {
                       // })
                     }
                     {/* <Line data={data[1]} type="monotone" dataKey="value" stroke="red"/> */}
-                    {console.log(data)}
                     {/* <YAxis hide={true} dataKey="name" yAxisId={"123"} tick={{ fontSize: '0.8rem', fontFamily: 'League Spartan' }}/>   */}
                     {/* <Line data={data[0]} type="monotone" dataKey="value" stroke="red"/> */}
                     <Tooltip contentStyle={{ backgroundColor: '#0A122A', border: 'unset', color: 'white' }}/>

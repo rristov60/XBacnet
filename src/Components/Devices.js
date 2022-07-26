@@ -1,6 +1,6 @@
 
 const Devices = ({ devices }) => {
-    // console.log(`In components: ${devices[0].header.sender.address}`);
+    // //console.log(`In components: ${devices[0].header.sender.address}`);
   return (
     <>
         <h3>{devices.length}</h3>

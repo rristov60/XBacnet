@@ -55,7 +55,7 @@ var color = 'red';
 const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, selectDevice, scanStart, setOpen, setActiveInterface }) => {
 
   const classes = useStyles();
-  console.table(interfaces);
+  //console.table(interfaces);
 
   const menuProps = {
     classes: {
@@ -79,7 +79,7 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
   const [loading, setLoading] = React.useState(false);
 
   const handleChange = (event) => {
-    console.log(event.target.value);
+    //console.log(event.target.value);
     setSelectedInterface(event.target.value);
   };
 
@@ -92,13 +92,13 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
     selectDevice({});
     scanStart();
     setLoading(true);
-    window.testAPI.whoIs(selectedInterface, (response) => {
+    window.bacnet.whoIs(selectedInterface, (response) => {
       
       
         setActiveInterface(selectedInterface);
         // TODO:
         // Fetch devices name and represent them that way (*but keep the IP as tooltip)
-        console.log(response);
+        //console.log(response);
 
         let devices = []; // Array that stores the devices
 
@@ -108,7 +108,7 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
             // New object for each device in the response
             let device = {};
 
-            // console.log(item);
+            // //console.log(item);
             
             // Formatting so it is more readable
             device.address = item.header.sender.address;
@@ -122,6 +122,7 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
             device.expectingReply = item.header.expectingReply;
             device.func = item.header.func;
             device.nodeId = i;
+            device.info = {};
 
             devices.push(device); // Adding the new device to the array
 
