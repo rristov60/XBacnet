@@ -1,7 +1,7 @@
 {
   "name": "xbacnet",
   "productName": "XBacnet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cross Platform BACnet Explorer",
   "main": "public/main.js",
   "scripts": {
@@ -59,7 +59,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rristov60/XBacnet.git"
+    "url": "git+https://github.com/rristov60/CROPBE.git"
   },
   "keywords": [
     "BACnet",
@@ -72,7 +72,7 @@
   "author": "Riste Ristov <risteristov60@yahoo.com> (https://riste.mk)",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/rristov60/XBacnet/issues"
+    "url": "https://github.com/rristov60/CROPBE/issues"
   },
   "homepage": "./",
   "devDependencies": {

@@ -11,7 +11,8 @@ import Typography from 'react';
 import ErrorAlert from './ErrorAlert';
 import WarningAlert from './WarningAlert';
 import Toast from './Toast';
-const bacnetProperties = require('../Helpers/BacnetProperties.json')
+const bacnetProperties = require('../Helpers/BacnetProperties.json');
+const errorsDescription = require('../Helpers/ErrorsDescription.json');
 
 function MinusSquare(props) {
   return (
@@ -105,6 +106,7 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState('');
   const [toastType, setToastType] = React.useState('success');
+  const [toastTitle, setToastTitle] = React.useState('');
 
   const updateSelectedVar = (device, variable) => {
     if(variable.OBJECT_NAME == undefined) {
@@ -162,14 +164,35 @@ const TreeVariables = ({ device, updateDevice, selectVariable }) => {
             setToastOpen(true);
             setTimeout(() => {
               setToastOpen(false);
-            }, 1000);
+            }, 1500);
           } else {
-            setToastMessage(`An error occurred: ${response.error}!`);
+            var theResponse = `${response.error}`;
+
+            setToastTitle(`${response.error}`);
+
+            if(theResponse.includes('BacnetAbort')) {
+                var responseFormatted = theResponse.split(':');
+                var abortReason = responseFormatted[responseFormatted.length - 1];
+
+                setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+            } else {
+                var responseFormatted = `${response.error}`;
+                responseFormatted = responseFormatted.substring(
+                    responseFormatted.lastIndexOf('(') + 1,
+                    responseFormatted.lastIndexOf(')')
+                );
+                
+                if(errorsDescription.ErrorCodes[responseFormatted] != undefined)
+                  setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+                else 
+                  setToastMessage(`${response.error}`)
+            }
+            
             setToastType('error');
             setToastOpen(true);
             setTimeout(() => {
               setToastOpen(false);
-            }, 4000)
+            }, 15000)
           }
           updateDevice(device); // Updating the device
           selectVariable(variable);

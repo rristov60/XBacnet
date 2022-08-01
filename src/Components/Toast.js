@@ -5,7 +5,7 @@ import Fade from '@mui/material/Fade';
 import Slide from '@mui/material/Slide';
 import Grow from '@mui/material/Grow';
 import { Box } from '@mui/system';
-import { AlertTitle , Alert } from '@mui/material';
+import { AlertTitle , Alert, Typography } from '@mui/material';
 function SlideTransition(props) {
   return <Slide {...props} direction="right" />;
 }
@@ -14,7 +14,14 @@ function GrowTransition(props) {
   return <Grow {...props} />;
 }
 
-const Toast = ({ open, message, type, cov = 'false'}) => {
+function getWidth(type) { 
+    if(type == 'success')
+        return '25%';
+    
+    return '35%';
+}
+
+const Toast = ({ open, message, type, cov = 'false', title = type.charAt(0).toUpperCase() + type.slice(1)}) => {
 //   const [open, setOpen] = React.useState(false);
 
   return (
@@ -43,10 +50,14 @@ const Toast = ({ open, message, type, cov = 'false'}) => {
                             bottom: 0,
                             zIndex: '999999 !important',
                             textAlign: 'left',
+                            width: getWidth(type),
                             right: 20, }}
                         variant='filled'
                     >
-                        <AlertTitle>{type.charAt(0).toUpperCase() + type.slice(1)}</AlertTitle>
+                        <AlertTitle>
+                            {/* {type.charAt(0).toUpperCase() + type.slice(1)} */}
+                            {title}
+                        </AlertTitle>
                         {message}
                     </Alert>
                 </Slide>
@@ -75,11 +86,17 @@ const Toast = ({ open, message, type, cov = 'false'}) => {
                         bottom: 0,
                         zIndex: '999999 !important',
                         textAlign: 'left',
+                        width: getWidth(type),
                         left: 20, }}
                     variant='filled'
                 >
-                    <AlertTitle>{type.charAt(0).toUpperCase() + type.slice(1)}</AlertTitle>
-                    {message}
+                    <AlertTitle>
+                        {title}
+                        {/* {type.charAt(0).toUpperCase() + type.slice(1)} */}
+                    </AlertTitle>
+                    {/* <Typography> */}
+                        {message}
+                    {/* </Typography> */}
                 </Alert>
             </Slide>
         </Box>

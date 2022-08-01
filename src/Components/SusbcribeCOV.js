@@ -1,6 +1,7 @@
 import { Button, CircularProgress, LinearProgress, Toolbar, Tooltip, Zoom } from '@mui/material'
 import { useState } from 'react'
 import Toast from './Toast';
+const errorsDescription = require('../Helpers/ErrorsDescription.json');
 
 const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeSubscription }) => {
 
@@ -8,6 +9,7 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
     const [toastOpen, setToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState('success');
+    const [toastTitle, setToastTitle] = useState('');
   
     
     const subscribeCOV = () => {
@@ -45,23 +47,45 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                     // ]
                 };
 
+                setToastTitle(`Success`);
                 setToastMessage(`Successfully subscribed to COV for: ${variable.OBJECT_NAME.value}!`);
                 setToastType('success');
                 setToastOpen(true);
                 setTimeout(() => {
                     setToastOpen(false);
-                }, 1000);
+                }, 1500);
 
                 addSubscription(subscribedVariable);
                 updateDevice(device);
             } else {
-                // Failed to subscribe
-                setToastMessage(`An error occurred: ${response}!`);
+
+                var theResponse = `${response}`;
+
+                setToastTitle(`${response}`);
+
+                if(theResponse.includes('BacnetAbort')) {
+                    var responseFormatted = theResponse.split(':');
+                    var abortReason = responseFormatted[responseFormatted.length - 1];
+
+                    setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+                } else {
+                    var responseFormatted = `${response}`;
+                    responseFormatted = responseFormatted.substring(
+                        responseFormatted.lastIndexOf('(') + 1,
+                        responseFormatted.lastIndexOf(')')
+                    );
+                    
+                    if(errorsDescription.ErrorCodes[responseFormatted] != undefined)
+                        setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+                    else 
+                        setToastMessage(`${response.error}`)
+                }
+                
                 setToastType('error');
                 setToastOpen(true);
                 setTimeout(() => {
                   setToastOpen(false);
-                }, 4000)
+                }, 15000)
             }
         });
 
@@ -103,18 +127,35 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                 setToastOpen(true);
                 setTimeout(() => {
                     setToastOpen(false);
-                }, 1000);
+                }, 1500);
 
                 removeSubscription(unsubscribeVar);
                 updateDevice(device);
             } else {
                 // Failed to unsubscribe
-                setToastMessage(`An error occurred: ${response}!`);
+                var theResponse = `${response}`;
+
+                setToastTitle(`${response}`);
+
+                if(theResponse.includes('BacnetAbort')) {
+                    var responseFormatted = theResponse.split(':');
+                    var abortReason = responseFormatted[responseFormatted.length - 1];
+
+                    setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+                } else {
+                    var responseFormatted = `${response}`;
+                    responseFormatted = responseFormatted.substring(
+                        responseFormatted.lastIndexOf('(') + 1,
+                        responseFormatted.lastIndexOf(')')
+                    );
+                    setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+                }
+                
                 setToastType('error');
                 setToastOpen(true);
                 setTimeout(() => {
                   setToastOpen(false);
-                }, 4000)
+                }, 15000)
             }
         });
 
@@ -158,7 +199,7 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
             }
             </>
         }
-        <Toast open={toastOpen} message={toastMessage} type={toastType} cov={'true'}/>
+        <Toast open={toastOpen} message={toastMessage} type={toastType} cov={'true'} title={toastTitle}/>
     </>
   )
 }

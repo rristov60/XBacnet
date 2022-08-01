@@ -12,6 +12,7 @@ import Toast from './Toast';
 
 const bacnetTypes = require('../Helpers/BacnetTypes.json');
 const bacnetProperties = require('../Helpers/BacnetProperties.json');
+const errorsDescription = require('../Helpers/ErrorsDescription.json');
 
 function MinusSquare(props) {
   return (
@@ -106,6 +107,7 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState('');
   const [toastType, setToastType] = React.useState('success');
+  const [toastTitle, setToastTitle] = React.useState('');
 
   const updateDevice = (device) => {
 
@@ -208,14 +210,42 @@ const TreeDevices = ({ devices, updateDevices, selectDevice }) => {
             setToastOpen(true);
             setTimeout(() => {
               setToastOpen(false);
-            }, 1000)
+            }, 1500)
         } else {
-          setToastMessage(`An error occurred: ${response.error}!`);
+          // setToastMessage(`An error occurred: ${response.error}!`);
+          // setToastType('error');
+          // setToastOpen(true);
+          // setTimeout(() => {
+          //   setToastOpen(false);
+          // }, 15000)
+
+          var theResponse = `${response.error}`;
+
+          setToastTitle(`${response.error}`);
+
+          if(theResponse.includes('BacnetAbort')) {
+              var responseFormatted = theResponse.split(':');
+              var abortReason = responseFormatted[responseFormatted.length - 1];
+
+              setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+          } else {
+              var responseFormatted = `${response.error}`;
+              responseFormatted = responseFormatted.substring(
+                  responseFormatted.lastIndexOf('(') + 1,
+                  responseFormatted.lastIndexOf(')')
+              );
+
+              if(errorsDescription.ErrorCodes[responseFormatted] != undefined)
+                setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+              else 
+                setToastMessage(`${response.error}`)
+          }
+          
           setToastType('error');
           setToastOpen(true);
           setTimeout(() => {
             setToastOpen(false);
-          }, 1000)
+          }, 15000)
         }
 
           // The properties above are enough for initial reading

@@ -8,7 +8,8 @@ import InfoAlert from './InfoAlert';
 import { Button } from '@mui/material';
 import AlertDialog from './AlertDialog';
 import Toast from './Toast';
-const bacnetProperties = require('../Helpers/BacnetProperties.json')
+const bacnetProperties = require('../Helpers/BacnetProperties.json');
+const errorsDescription = require('../Helpers/ErrorsDescription.json');
 // const { ipcRenderer } = window.require('electron');
 
 
@@ -22,6 +23,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     const [toastOpen, setToastOpen] = React.useState(false);
     const [toastMessage, setToastMessage] = React.useState('');
     const [toastType, setToastType] = React.useState('success');
+    const [toastTitle, setToastTitle] = React.useState('');
 
     const handleClickOpen = (property) => {
       setSelectedProperty(property);
@@ -98,9 +100,35 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
               setToastOpen(true);
               setTimeout(() => {
                 setToastOpen(false);
-              }, 1000);
+              }, 1500);
             } else {
+              var theResponse = `${response.error}`;
 
+              setToastTitle(`${response.error}`);
+    
+              if(theResponse.includes('BacnetAbort')) {
+                  var responseFormatted = theResponse.split(':');
+                  var abortReason = responseFormatted[responseFormatted.length - 1];
+    
+                  setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+              } else {
+                  var responseFormatted = `${response.error}`;
+                  responseFormatted = responseFormatted.substring(
+                      responseFormatted.lastIndexOf('(') + 1,
+                      responseFormatted.lastIndexOf(')')
+                  );
+                  
+                  if(errorsDescription.ErrorCodes[responseFormatted] != undefined)
+                    setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+                  else 
+                    setToastMessage(`${response.error}`)
+              }
+              
+              setToastType('error');
+              setToastOpen(true);
+              setTimeout(() => {
+                setToastOpen(false);
+              }, 15000)
             }
   
             // response.values[0].values.map((value) => {
