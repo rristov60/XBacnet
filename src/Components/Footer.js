@@ -2,7 +2,6 @@ import React from 'react';
 import  Logo  from '../Assets/NewLogo.svg';
 import LogoWriting from '../Assets/LogoWriting.svg';
 import InfoDialog from './InfoDialog';
-import { Tooltip } from 'recharts';
 
 var style = {
     backgroundColor: "#0c1636",
@@ -49,7 +48,6 @@ const Footer = ({ children, activeInterface }) => {
           </div>
           <div style={{ textAlign: 'center'}}>
             <div style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
-              {/* <p style={{ color: 'rgb(107 114 128)' }}>CROPBE</p> */}
               <img src={Logo} style={{ height: 20 }} onClick={openDialog}/>
               <br></br>
               <img src={LogoWriting} style={{ height: 30 }} onClick={openDialog}/>

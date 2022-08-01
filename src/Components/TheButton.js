@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button';
-// import whoIs from '../Helpers/whoIs';
 
 const TheButton = ({ clickEvent, theVariant, text }) => {
   return (

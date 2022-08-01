@@ -1,5 +1,4 @@
 import { Alert } from '@mui/material'
-import { Tooltip } from 'recharts'
 
 const WarningAlert = ({ text }) => {
   return (

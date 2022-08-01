@@ -1,16 +1,10 @@
 import * as React from 'react';
-import { DataGrid, GridCellEditStopReasons } from '@mui/x-data-grid';
-import {
-  randomTraderName,
-} from '@mui/x-data-grid-generator';
-import ErrorAlert from './ErrorAlert';
+import { DataGrid } from '@mui/x-data-grid';
 import InfoAlert from './InfoAlert';
-import { Button } from '@mui/material';
 import AlertDialog from './AlertDialog';
 import Toast from './Toast';
 const bacnetProperties = require('../Helpers/BacnetProperties.json');
 const errorsDescription = require('../Helpers/ErrorsDescription.json');
-// const { ipcRenderer } = window.require('electron');
 
 
 export default function ExplorerTable({ variable, device, updateSubscription }) {
@@ -31,7 +25,6 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     };
 
     const handleCancel = () => {
-      //console.log("value to write:", valueToWrite);
       setValueToWrite('UNIQUEERRSTRINGNOTTOWRITE');
       setSelectedProperty({});
       setObjectToWrite({});
@@ -40,12 +33,9 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
 
     const handleSave = () => {
 
-      // //console.log('Value to write: ', valueToWrite);
-      //console.log('Variable: ', valueToWrite);
-      //console.log(selectedProperty);
-      // //console.log('The property:', selectedProperty);
       var writeObject = null;
       if(!valueToWrite.isObject) {
+
         writeObject = {
           typeInstance: {
             type: variable.value.type,
@@ -57,8 +47,9 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             value: valueToWrite.value
           }]
         };
-        //console.log('WriteOBJECT: ', writeObject);
+
       } else {
+
         delete valueToWrite.isObject;
         writeObject = {
           typeInstance: {
@@ -71,29 +62,15 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             value: valueToWrite
           }]
         };
-      }
 
-        //console.table(writeObject);
+      }
 
       if(valueToWrite != 'UNIQUEERRSTRINGNOTTOWRITE') {
         // write to the device
-
-        //  const writeObject = {
-        //     type: variable.value.type,
-        //     instance: variable.value.instance,
-        //     theValue: {
-        //       type: bacnetTypes.selectedProperty.id,
-        //       value: valueToWrite
-        //     }
-        //  };
-
         window.bacnet.writeToObject(device, writeObject, (response) => {
-          // Debugging the response
-            //console.log(response);
 
             if(response.error == null) {
               variable[selectedProperty.id].value = valueToWrite.value;
-              // //console.log(variable[selectedProperty.id].value);
               // update the variable
               setToastMessage(`Successfully written ${writeObject.theValue[0].value} to ${variable.OBJECT_NAME.value}!`);
               setToastType('success');
@@ -131,36 +108,12 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
               }, 15000)
             }
   
-            // response.values[0].values.map((value) => {
-            //   if(value.id == 77) {
-            //       variable.name = value.value[0].value;
-            //   } else if (value.id == 28) {
-            //       variable.description = value.value[0].value;
-            //   }
-            // })
-  
-            // Formatting the read properties to correspond
-            // with "enum"
-            // response.values[0].values.map((value) => {
-            //   Object.keys(bacnetProperties).map((key) => { // Getting the name of the variable type
-            //     if(bacnetProperties[key] == value.id) {
-            //       variable[key] = value.value[0].value;
-            //     }
-            //   })
-            // })
-  
-            // updateDevice(device); // Updating the device
-            // selectVariable(variable);
             setOpen(false);
         });
       }
       else 
         setOpen(false);
     };
-
-    const handleRowEditCommit = (params) => {
-      //console.log(params);
-    }
 
   const handleRowEdit = (params) => {
     // Filter the parameters
@@ -193,31 +146,9 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
           });
 
         }
-        // if(bacnetProperties[key] == value.id) {
-        //   variable[key] = value.value[0].value;
-        // }
       })
     }
 
-    // if(variable != undefined) {
-    //   rows.push({
-    //     id: `${variable.value.type /* Later change this to correspond to type to each property */}|${variable.value.instance}`,
-    //     BACnetProperty: 'Description',
-    //     value: variable.description
-    //   });
-
-    //   rows.push({
-    //     id: `${variable.value.type}|name`,
-    //     BACnetProperty: 'Name',
-    //     value: variable.name
-    //   });
-
-    //   rows.push({
-    //     id: `${variable.value.type}|type`,
-    //     BACnetProperty: 'Type',
-    //     value: `${variable.typeName} ( ${variable.type} )`
-    //   });
-    // }
 
     return rows;
   }
@@ -226,14 +157,8 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
     <div style={{ height: '35vh', width: '100%'}}>
       {
         (variable.DESCRIPTION == undefined) ? 
-        // Show error alert
-        // <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        //   <div style={{ width: '90%'}}>
-            // <Button onClick={    //console.log('Variable in Explorer Table', variable)}>Check</Button>
-            <InfoAlert text='Nothing to display !'/>
-        //   </div>
-        // </div>
-        // <ErrorAlert text='Nothing to display !'/>
+          // Show Info alert
+          <InfoAlert text='Nothing to display !'/>
         :
         // Show the actual table
         <>
@@ -243,11 +168,7 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
             showColumnRightBorder={true}
             columns={columns}
             sx={{color: 'white', textAlign: 'center', border: 'unset', width: '100%', overflow: 'scroll'}}
-            // onCellEditStop={() => {//console.log('Stopped Editing the Celld')}}
-            // onCellEditStop={handleRowEditCommit}
-            // disableSelectionOnClick
             onCellEditStart={(params, event) => {
-              //console.log(params);
               var property = {
                 name: params.row.BACnetProperty,
                 value: params.row.value,
@@ -257,21 +178,8 @@ export default function ExplorerTable({ variable, device, updateSubscription }) 
               handleClickOpen(property);
             }}
 
-            onCellEditCommit={(params, event) => {
-                
-                if(params.id.includes('name')) {
-                  //console.log('EDIT');
-                } else {
-                  //console.log('Return Old value');
-                  event.defaultMuiPrevented = true; // Preventing the edit on the cell
-                  //console.log(params);
-                  //console.log(variable);
-                }
-            }}
-            // onCellFocusOut={(params) => {//console.log(params)}}
             hideFooter={true}
             sortModel={undefined}
-            // experimentalFeatures={{ newEditingApi: true }}
           />
           <Toast open={toastOpen} message={toastMessage} type={toastType}/>
         </>
