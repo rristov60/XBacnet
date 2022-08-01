@@ -1,6 +1,7 @@
-import { Button, CircularProgress, LinearProgress, Toolbar, Tooltip, Zoom } from '@mui/material'
+import { Button, Tooltip, Zoom } from '@mui/material'
 import { useState } from 'react'
 import Toast from './Toast';
+const errorsDescription = require('../Helpers/ErrorsDescription.json');
 
 const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeSubscription }) => {
 
@@ -8,13 +9,11 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
     const [toastOpen, setToastOpen] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState('success');
+    const [toastTitle, setToastTitle] = useState('');
   
     
     const subscribeCOV = () => {
 
-        // client.subscribeCov('192.168.0.104', { type: 4, instance: 101 },85, false, false, 0, (err) => {
-        //     //console.log('SubscribeCOV: ' + err);
-        // });
         const subscribeObject = {
             typeInstance: {
                 type: variable.value.type,
@@ -24,11 +23,9 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
         };
 
         window.bacnet.subscribeCOV(device, subscribeObject, (response) => {
-            // //console.log('COV Response: ', response);
 
             if(response == undefined) {
 
-                // //console.log("TheDevice: ", device);
                 variable.cov.subscribed = true;
 
                 var subscribedVariable = {
@@ -36,38 +33,49 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                     type: variable.value.type,
                     instance: variable.value.instance,
                     name: variable.OBJECT_NAME.value
-                    // property: {
-                    //     id: 85,
-                    //     type: 9
-                    // },
-                    // values: [
-                    //     variable.PRESENT_VALUE
-                    // ]
                 };
 
+                setToastTitle(`Success`);
                 setToastMessage(`Successfully subscribed to COV for: ${variable.OBJECT_NAME.value}!`);
                 setToastType('success');
                 setToastOpen(true);
                 setTimeout(() => {
                     setToastOpen(false);
-                }, 1000);
+                }, 1500);
 
                 addSubscription(subscribedVariable);
                 updateDevice(device);
             } else {
-                // Failed to subscribe
-                setToastMessage(`An error occurred: ${response}!`);
+
+                var theResponse = `${response}`;
+
+                setToastTitle(`${response}`);
+
+                if(theResponse.includes('BacnetAbort')) {
+                    var responseFormatted = theResponse.split(':');
+                    var abortReason = responseFormatted[responseFormatted.length - 1];
+
+                    setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+                } else {
+                    var responseFormatted = `${response}`;
+                    responseFormatted = responseFormatted.substring(
+                        responseFormatted.lastIndexOf('(') + 1,
+                        responseFormatted.lastIndexOf(')')
+                    );
+
+                    if(errorsDescription.ErrorCodes[responseFormatted] != undefined)
+                        setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+                    else 
+                        setToastMessage(`${response.error}`)
+                }
+                
                 setToastType('error');
                 setToastOpen(true);
                 setTimeout(() => {
                   setToastOpen(false);
-                }, 4000)
+                }, 15000)
             }
         });
-
-        // //console.log("TheDevice: ", device);
-        // variable.cov.subscribed = true;
-        // updateDevice(device);
     }
 
     const unSubscribeCOV = () => {
@@ -82,7 +90,7 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
 
         window.bacnet.unsubscribeCOV(device, unsubscribeObject, (response) => {;
             if(response == undefined) {
-                //console.log('Response Unsusbcribe: ', response);
+
                 variable.cov.subscribed = false;
                 
                 var unsubscribeVar = {
@@ -103,18 +111,35 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                 setToastOpen(true);
                 setTimeout(() => {
                     setToastOpen(false);
-                }, 1000);
+                }, 1500);
 
                 removeSubscription(unsubscribeVar);
                 updateDevice(device);
             } else {
                 // Failed to unsubscribe
-                setToastMessage(`An error occurred: ${response}!`);
+                var theResponse = `${response}`;
+
+                setToastTitle(`${response}`);
+
+                if(theResponse.includes('BacnetAbort')) {
+                    var responseFormatted = theResponse.split(':');
+                    var abortReason = responseFormatted[responseFormatted.length - 1];
+
+                    setToastMessage(`${errorsDescription.AbortReason[`${abortReason}`]}!`);
+                } else {
+                    var responseFormatted = `${response}`;
+                    responseFormatted = responseFormatted.substring(
+                        responseFormatted.lastIndexOf('(') + 1,
+                        responseFormatted.lastIndexOf(')')
+                    );
+                    setToastMessage(`${errorsDescription.ErrorCodes[responseFormatted]}!`);
+                }
+                
                 setToastType('error');
                 setToastOpen(true);
                 setTimeout(() => {
                   setToastOpen(false);
-                }, 4000)
+                }, 15000)
             }
         });
 
@@ -128,7 +153,6 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                 <></>
             :
             <>
-            {/* <Toast open={toastOpen} message={toastMessage} type={toastType}/> */}
             {
                 (variable?.cov?.subscribed == false || variable?.cov?.subscribed == undefined) ? 
                     // If there isn't a scan running in the momment
@@ -138,7 +162,6 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                             Subscribe COV
                         </Button>
                     </Tooltip>
-                    {/* <Toast open={toastOpen} message={toastMessage} type={toastType}/> */}
                     </>
                     :
                     // Progress if scan is running in the momment
@@ -150,15 +173,10 @@ const SubscribeCOV = ({ variable, device, updateDevice, addSubscription, removeS
                     </Tooltip>
                     
                     </>
-                    // <>
-                    //     <div>
-                    //         <LinearProgress style={{ backgroundColor: '#A3E635', color: '#A3E635', width: '25%'}}/>
-                    //     </div>
-                    // </>
             }
             </>
         }
-        <Toast open={toastOpen} message={toastMessage} type={toastType} cov={'true'}/>
+        <Toast open={toastOpen} message={toastMessage} type={toastType} cov={'true'} title={toastTitle}/>
     </>
   )
 }

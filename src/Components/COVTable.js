@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -14,7 +13,6 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InfoAlert from './InfoAlert';
-import Toast from './Toast';
 
 function createData(device, objectType, instance, value, time, history, OBJECT_NAME) {
   return {
@@ -23,25 +21,12 @@ function createData(device, objectType, instance, value, time, history, OBJECT_N
     instance,
     value,
     time,
-    // history: [
-    //   {
-    //     date: '2020-01-05',
-    //     customerId: '11091700',
-    //     // amount: 3,
-    //   },
-    //   {
-    //     date: '2020-01-02',
-    //     customerId: 'Anonymous',
-    //     // amount: 1,
-    //   },
-    // ],
     history,
     OBJECT_NAME
   };
 }
 
 function Row({ row, setSubscriptionToPlot }) {
-  // const { row, setSubscriptionToPlot } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -55,7 +40,6 @@ function Row({ row, setSubscriptionToPlot }) {
             onClick={() => {
               setOpen(!open);
               setSubscriptionToPlot(row);
-              //console.log('Row', row);
             }}
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -81,8 +65,6 @@ function Row({ row, setSubscriptionToPlot }) {
                   <TableRow>
                     <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Time</TableCell>
                     <TableCell sx={{ color: 'white', fontFamily: 'League Spartan'}}>Value</TableCell>
-                    {/* <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -92,10 +74,6 @@ function Row({ row, setSubscriptionToPlot }) {
                         {convertTimeStampToReadable(historyRow.time)}
                       </TableCell>
                       <TableCell sx={{ color: 'white', fontFamily: 'League Spartan' }}>{historyRow.data.value}</TableCell>
-                      {/* <TableCell align="right">{historyRow.amount}</TableCell> */}
-                      {/* <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -107,26 +85,6 @@ function Row({ row, setSubscriptionToPlot }) {
     </React.Fragment>
   );
 }
-
-// TODO:
-// Adjust these properties in to correspond with the actual values
-// Row.propTypes = {
-//   row: PropTypes.shape({
-//     calories: PropTypes.number.isRequired,
-//     carbs: PropTypes.number.isRequired,
-//     fat: PropTypes.number.isRequired,
-//     history: PropTypes.arrayOf(
-//       PropTypes.shape({
-//         amount: PropTypes.number.isRequired,
-//         customerId: PropTypes.string.isRequired,
-//         date: PropTypes.string.isRequired,
-//       }),
-//     ).isRequired,
-//     name: PropTypes.string.isRequired,
-//     price: PropTypes.number.isRequired,
-//     protein: PropTypes.number.isRequired,
-//   }).isRequired,
-// };
 
 // These are the values that need to be in the table
 const rows = [
@@ -147,10 +105,7 @@ const convertTimeStampToReadable = (timestamp) => {
 // Table for COV Subscriptions / Alarams / Period Polling
 const COVTable = ({ subscriptions, activeSubscriptions, setSubscriptionToPlot }) => {
 
-  //console.log(activeSubscriptions);
   var rows=[];
-  //console.log('COV Table: ', subscriptions);
-  // //console.log('COV TABLE SUBSCRIPTIONS LENGTH: ', subscriptions.length);
   const createRows = () => {
     activeSubscriptions.forEach((subscription) => {
       var currentSubscription = subscriptions.filter(x => x.device == subscription.device && x.type == subscription.type && x.instance == subscription.instance);
@@ -159,11 +114,10 @@ const COVTable = ({ subscriptions, activeSubscriptions, setSubscriptionToPlot })
                               currentSubscription[0].type, 
                               currentSubscription[0].instance, 
                               currentSubscription[0].values[currentSubscription[0].values.length - 1].data.value, 
-                              // currentSubscription[0].values[currentSubscription[0].values.length - 1].time, 
                               convertTimeStampToReadable(currentSubscription[0].values[currentSubscription[0].values.length - 1].time), 
                               currentSubscription[0].values,
                               subscription.name
-                              ));
+                            ));
       }
 
     })

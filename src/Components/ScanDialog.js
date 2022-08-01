@@ -1,12 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
-// import { createTheme } from '@mui/material/styles'
-import createPalette from '@mui/material/styles/createPalette'
-import { FormControl, InputLabel, Select, MenuItem, NativeSelect, OutlinedInput as MuiOutlinedInput, LinearProgress } from '@mui/material';
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
-import { makeStyles, ThemeProvider, withStyles } from '@mui/styles';
+import { FormControl, InputLabel, Select, MenuItem, OutlinedInput as MuiOutlinedInput, LinearProgress } from '@mui/material';
+import { makeStyles, withStyles } from '@mui/styles';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -51,11 +47,9 @@ const useStyles = makeStyles((theme) => ({
 
 var color = 'red';
 
-
 const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, selectDevice, scanStart, setOpen, setActiveInterface }) => {
 
   const classes = useStyles();
-  //console.table(interfaces);
 
   const menuProps = {
     classes: {
@@ -70,7 +64,6 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
       vertical: "top",
       horizontal: "center"
     }
-    // getContentAnchorEl: null
   };
 
 
@@ -79,7 +72,6 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
   const [loading, setLoading] = React.useState(false);
 
   const handleChange = (event) => {
-    //console.log(event.target.value);
     setSelectedInterface(event.target.value);
   };
 
@@ -98,7 +90,6 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
         setActiveInterface(selectedInterface);
         // TODO:
         // Fetch devices name and represent them that way (*but keep the IP as tooltip)
-        //console.log(response);
 
         let devices = []; // Array that stores the devices
 
@@ -190,7 +181,6 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
               variant='filled'
               inputProps={{
                 classes: {
-                    // icon: classes.icon,
                     root: classes.root,
                     select: classes.select
                 },
@@ -214,7 +204,6 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
             <>
               <Button onClick={handleCancel} variant='outlined' style={{ borderColor: 'red', color: 'red' }}>Cancel</Button>
               <Button onClick={addDevices} cariant='contained' style={{ backgroundColor: '#A3E635', color: '#0c1636'}}>Scan</Button>
-              {/* <Button onClick={() => setLoading(true)} cariant='contained' style={{ backgroundColor: '#A3E635', color: '#0c1636'}}>Scan</Button> */}
             </>
             :
             <>
@@ -224,7 +213,6 @@ const ScanDialog = ({ open, handleScan, handleCancel, interfaces, addDevice, sel
                   color: '#A3E635', 
                   width: '95%',  
                   borderRadius: '20px', 
-                  // border: '1px solid #A3E635',
                   "& .MuiLinearProgress-bar": {
                     backgroundColor: `#A3E635`
                   }

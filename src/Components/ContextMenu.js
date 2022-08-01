@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 
 export default function ContextMenu({ items }) {
   const [contextMenu, setContextMenu] = React.useState(null);

@@ -1,4 +1,4 @@
-import { Button, CircularProgress, LinearProgress, Toolbar, Tooltip, Zoom } from '@mui/material'
+import { Button, CircularProgress, Tooltip, Zoom } from '@mui/material'
 import { useState } from 'react'
 import ScanDialog from './ScanDialog';
 
@@ -20,7 +20,6 @@ const Scan = ({ addDevice, selectDevice, scanStart, setActiveInterface }) => {
     }
 
     const openDialog = () => {
-        // setOpen(true);
         setInterfaces([]);
         var newInterfaces = [{
             address: '0.0.0.0',
@@ -44,17 +43,15 @@ const Scan = ({ addDevice, selectDevice, scanStart, setActiveInterface }) => {
                               };
                               // Push the object array that is later going to be dispalyed in front-end
                               newInterfaces.push(theInterface);
-                            //   setInterfaces([...interfaces, theInterface]);
                           }
       
                       }
                   })
               });
-              //console.log('Interfaces:', interfaces)
-            //   setTimeout(() => {
-                setOpen(true);
-            //   }, 2000);
-              setInterfaces(newInterfaces);
+
+            setOpen(true);
+            setInterfaces(newInterfaces);
+
             })
     }
     
@@ -66,9 +63,6 @@ const Scan = ({ addDevice, selectDevice, scanStart, setActiveInterface }) => {
             // If there isn't a scan running in the momment
             <>
                 <Tooltip title='Scan for devices' TransitionComponent={Zoom} arrow>
-                    {/* <Button onClick={addDevices} variant="contained" style={{ backgroundColor: '#A3E635', color: '#0A122A' }}>
-                        Scan
-                    </Button> */}
                     <Button onClick={openDialog} variant="contained" style={{ backgroundColor: '#A3E635', color: '#0A122A' }}>
                         Scan
                     </Button>
@@ -78,12 +72,6 @@ const Scan = ({ addDevice, selectDevice, scanStart, setActiveInterface }) => {
             :
             // Progress if scan is running in the momment            
             <CircularProgress style={{ color: '#A3E635'}} disableShrink/>
-            // <LinearProgress style={{ color: '#A3E635'}} />
-            // <>
-            //     <div>
-            //         <LinearProgress style={{ backgroundColor: '#A3E635', color: '#A3E635', width: '25%'}}/>
-            //     </div>
-            // </>
     }
     </>
   )
