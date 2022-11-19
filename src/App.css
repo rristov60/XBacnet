@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  font-family: 'League Spartan', sans-serif;
+  font-family: "League Spartan", sans-serif;
   overflow: hidden;
 }
 
@@ -9,8 +9,7 @@ img:hover {
 }
 
 body {
-  /* -webkit-app-region: drag; */
-  background-color: #0A122A;
+  background-color: #0a122a;
   color: white;
   overflow: hidden;
 }
@@ -20,7 +19,7 @@ body {
 }
 
 * {
-  font-family: 'League Spartan', sans-serif;
+  font-family: "League Spartan", sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -28,22 +27,18 @@ body {
   height: 0.3rem;
 }
 
-/* ::-webkit-scrollbar-track {
-  margin: 40px;
-} */
-
 ::-webkit-scrollbar-corner {
   background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #A3E635;
+  background: #a3e635;
   border-radius: 100vw;
   height: 0.5rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: 'red';
+  background: "red";
 }
 
 .App-logo {
@@ -58,8 +53,7 @@ body {
 }
 
 .App-header {
-  /* background-color: #282c34; */
-  background-color: #0A122A;
+  background-color: #0a122a;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

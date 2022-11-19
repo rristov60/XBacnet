@@ -1,7 +1,7 @@
 {
   "name": "xbacnet",
   "productName": "XBacnet",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Cross Platform BACnet Explorer",
   "main": "public/main.js",
   "scripts": {
@@ -19,14 +19,14 @@
     "extends": null,
     "appId": "com.xbacnet.app",
     "mac": {
-      "target": [ 
+      "target": [
         {
-          "target":"dmg",
-          "arch":"arm64"
+          "target": "dmg",
+          "arch": "arm64"
         },
         {
-          "target":"dmg",
-          "arch":"x64"
+          "target": "dmg",
+          "arch": "x64"
         }
       ]
     },
@@ -69,7 +69,7 @@
     "Open",
     "Source"
   ],
-  "author": "Riste Ristov <risteristov60@yahoo.com> (https://riste.mk)",
+  "author": "Riste Ristov <ristov@riste.mk> (https://riste.mk)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/rristov60/XBacnet/issues"
@@ -77,9 +77,7 @@
   "homepage": "./",
   "devDependencies": {
     "electron": "^19.0.7",
-    "electron-builder": "^23.1.0"
-  },
-  "dependencies": {
+    "electron-builder": "^23.1.0",
     "@electron/remote": "^2.0.8",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
@@ -92,7 +90,6 @@
     "@mui/x-data-grid-generator": "^5.13.0",
     "@react-spring/web": "^9.4.5",
     "mui-editable-table": "^0.3.3",
-    "node-bacnet": "^0.2.4",
     "react": "^18.2.0",
     "react-charts": "^3.0.0-beta.38",
     "react-dom": "^18.2.0",
@@ -100,6 +97,9 @@
     "react-spring": "^9.4.5",
     "recharts": "^2.1.12",
     "web-vitals": "^2.1.4"
+  },
+  "dependencies": {
+    "node-bacnet": "^0.2.4"
   },
   "browserslist": {
     "production": [
