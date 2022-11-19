@@ -1,11 +1,7 @@
 const whoIs = () => {
-    //console.log('Clicked Scan!');
-    window.bacnet.whoIs((data) => {
-        // devices = data;
-        return data;
-        // //console.log('From Scan:', data)
-        // return event.data;
-    })
-}
+  window.bacnet.whoIs((data) => {
+    return data;
+  });
+};
 
-export default whoIs
+export default whoIs;

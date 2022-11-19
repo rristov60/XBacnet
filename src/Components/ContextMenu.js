@@ -1,6 +1,6 @@
-import * as React from 'react';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import * as React from "react";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 export default function ContextMenu({ items }) {
   const [contextMenu, setContextMenu] = React.useState(null);
@@ -16,7 +16,7 @@ export default function ContextMenu({ items }) {
         : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
           // Other native context menus might behave different.
           // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-          null,
+          null
     );
   };
 
@@ -25,8 +25,8 @@ export default function ContextMenu({ items }) {
   };
 
   return (
-    <div onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
-        {items}
+    <div onContextMenu={handleContextMenu} style={{ cursor: "context-menu" }}>
+      {items}
       <Menu
         open={contextMenu !== null}
         onClose={handleClose}
