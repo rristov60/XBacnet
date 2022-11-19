@@ -54,7 +54,6 @@ const initBACnetClient = (bacnet, interface) => {
         var broadcastAddress = `${splitInterface[0]}.${splitInterface[1]}.${splitInterface[2]}.255`;
         if (interface != '0.0.0.0') {
             client = new bacnet({
-                interface: interface,
                 broadcastAddress: broadcastAddress,
                 apduTimeout: 6000
             });
